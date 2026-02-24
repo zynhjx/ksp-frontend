@@ -104,7 +104,8 @@ section.hero-section {
 .hero-desc {
     font-size: 20px;
     text-align: center;
-    margin: 0 112px 32px;
+    max-width: 672px;
+    margin: 0 auto 32px;
     color: var(--muted-text);
     line-height: 1.5;
 }
@@ -153,8 +154,7 @@ section.feature-section {
 
 .feature-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr 1fr; 
     gap: 24px;
     height: auto;
 }
@@ -184,7 +184,7 @@ section.feature-section {
 }
 
 .card-info {
-    height: 70px;
+    height: auto;
     flex: 1;
 }
 
@@ -224,6 +224,9 @@ section.feature-section {
 .barangay-lists {
     display: flex;
     gap: 24px;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 .barangay {
@@ -254,6 +257,7 @@ section.redirect-reg {
 
 .redirect-reg-container p {
     margin: 0 0 36px;
+    text-align: center;
 }
 
 .redirect-reg-container button {
@@ -282,3 +286,14 @@ footer p {
     font-size: 14px;
     color: var(--muted-text);
 }
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 36px;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
