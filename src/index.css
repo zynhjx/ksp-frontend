@@ -1,0 +1,12 @@
+:root {
+  --theme-white: #f8fafc;
+  --transparent-blue: #0057a31a;
+  --theme-blue: #0057a3;
+  --muted-text: #5C6470;
+}
+
+body {
+  background-color: var(--theme-white);
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
