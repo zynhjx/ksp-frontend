@@ -1,4 +1,4 @@
-.landing-container {
+.landing-page {
 	min-height: 100vh;
 	background: var(--theme-white);
 }
@@ -35,22 +35,40 @@ nav.landing-nav {
     gap: 16px;
 }
 
-.landing-nav > button {
+.landing-nav .heading-nav-btn {
     border: none;
     padding: 0.6rem 1rem;
     cursor: pointer;
     font-size: 14px;
     font-weight: 400;
-}
-
-.landing-nav .sign-in-btn {
-    background: transparent;
-}
-
-.landing-nav .get-started-btn {
-    color: var(--theme-white);
     border-radius: 8px;
-    background: #0058A3;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
+    box-shadow: none;
+    outline: none;
+}
+
+.landing-nav .primary-btn {
+    background: transparent;
+    color: black;
+}
+
+.landing-nav .primary-btn:hover {
+    color: var(--theme-blue);
+    background: var(--transparent-blue);
+    box-shadow: 0 2px 8px 0 rgba(0,88,163,0.10);
+
+}
+
+.landing-nav .secondary-btn {
+    color: var(--theme-white);
+    background: var(--theme-blue);
+}
+
+.landing-nav .secondary-btn:hover {
+    background: #003e73;
+    color: #fff;
+    box-shadow: 0 2px 12px 0 rgba(0,88,163,0.18);
+
 }
 
 .section-container {
@@ -115,26 +133,31 @@ section.hero-section {
     align-items: center;
     justify-content: center;
     display: flex;
-    height: 40px;
+    height: auto;
     gap: 20px;
 }
 
-.hero-btns button {
-    height: 100%;
-    cursor: pointer;
-    padding: 0 16px;
-    border-radius: 6px;
+.hero-btns .btns {
     font-size: 14px;
     font-weight: 600;
+    text-decoration: none;
 }
 
-.btn-reg-sk {
+.hero-btns .btns button {
+    cursor: pointer;
+    padding: 12px 16px;
+    border-radius: 6px;
+}
+
+.hero-btns .primary-btn {
     background-color: #0058A3;
     color: white;
     border: none;
+    display: flex;
+    align-items: center;
 }
 
-.btn-reg-ym {
+.hero-btns .secondary-btn {
     background-color: var(--theme-white);
     border: solid 1px var(--theme-blue);
     color: var(--theme-blue);
@@ -268,7 +291,9 @@ section.redirect-reg {
     color: var(--theme-blue);
     background-color: var(--theme-white);
     font-weight: bold;
+    cursor: pointer;
 }
+
 
 footer {
     padding: 32px 16px;

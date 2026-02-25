@@ -1,15 +1,19 @@
-import React from "react";
+import { Link } from "react-router-dom";
 import "./Landing.css";
 
 const Landing = () => {
 	return (
-		<div className="landing-container">
+		<div className="landing-page">
 			<header className="landing-header">
                 <div className="header-container">
                     <div className="logo">KSP - Kulang sa Pera</div>
                     <nav className="landing-nav">
-                        <button className="sign-in-btn">Sign In</button>
-                        <button className="get-started-btn">Get Started</button>
+                        <Link to="/auth/login">
+                            <button className="heading-nav-btn primary-btn">Sign In</button>
+                        </Link>
+                        <Link to="/auth/register">
+                            <button className="heading-nav-btn secondary-btn">Get Started</button>
+                        </Link>
                     </nav>
                 </div>
 				
@@ -29,8 +33,17 @@ const Landing = () => {
                             Sangguniang Kabataan officials.
                     </p>
                     <div className="hero-btns">
-                        <button className="btn-reg-sk">Register as SK Official</button>
-                        <button className="btn-reg-ym">Register as Youth Member</button>
+                        <Link to="/auth/register" className="btns">
+                            <button className="primary-btn">
+                                Register Now
+                                <svg style={{ marginLeft: '8px', verticalAlign: 'middle' }} width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            </button>
+                        </Link>
+                        <Link to="/auth/login" className="btns">
+                            <button className="secondary-btn">Sign In to Dashboard</button>
+                        </Link>
                     </div>
                 </div>
             </section>
