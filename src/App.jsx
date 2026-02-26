@@ -1,7 +1,7 @@
 // import { useState } from 'react'
 import LandingPage from './components/LandingPage'
-import Register from './components/Register'
-import Login from './components/Login'
+import RegisterPage from './components/RegisterPage'
+import LoginPage from './components/LoginPage'
 import {BrowserRouter, Routes, Route } from "react-router-dom"
 import './App.css'
 
@@ -10,8 +10,8 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path='/' element={<LandingPage />} />
-        <Route path='/auth/register' element={<Register />} />
-        <Route path='/auth/login' element={<Login />} />
+        <Route path='/auth/register' element={<RegisterPage />} />
+        <Route path='/auth/login' element={<LoginPage />} />
       </Routes>
     </BrowserRouter>
   )

@@ -2,7 +2,7 @@ import "./auth.css"
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-function Login() {
+function LoginPage() {
 
     const [showPassword, setShowPassword] = useState(false);
     const EyeClosed = (
@@ -28,7 +28,7 @@ function Login() {
     return (
         <div className="form-page login">
             <div className="form-container">
-                <img className="image" src="../src/assets/pngs/cydo-logo.png" alt=""/>
+                <img className="head-logo" src="../src/assets/pngs/ksp-logo.png" alt=""/>
                 <h2>Welcome Back</h2>
                 <p>Please enter your credentials to continue.</p>
                 <form>
@@ -61,7 +61,7 @@ function Login() {
                     <button type="submit">Submit</button>
                 </form>
                 <div className="redirect-container">
-                    <span>Dont have an account? </span>
+                    <span>Do not have an account? </span>
                     <Link to="/auth/register" className="link">
                         Register    
                     </Link>
@@ -71,4 +71,4 @@ function Login() {
     )
 }
 
-export default Login;
+export default LoginPage;

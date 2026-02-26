@@ -27,11 +27,10 @@
     max-width: 400px;
 }
 
-.form-container .image {
+.form-container .head-logo {
     width: 100px;
     height: 100px;
-    margin: 0 0 16px;
-    border-radius: 50%;
+    margin: 0 0 8px;
 }
 
 .form-container h2 {

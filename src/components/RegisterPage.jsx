@@ -2,7 +2,7 @@ import "./auth.css"
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-function Register() {
+function RegisterPage() {
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfPassword, setShowConfPassword] = useState(false);
@@ -29,7 +29,7 @@ function Register() {
     return (
         <div className="form-page">
             <div className="form-container">
-                <img className="image" src="../src/assets/pngs/cydo-logo.png" alt=""/>
+                <img className="head-logo" src="../src/assets/pngs/ksp-logo.png" alt=""/>
                 <h2>Create your account</h2>
                 <p>Please fill in your details to create an account.</p>
                 <form>
@@ -125,4 +125,4 @@ function Register() {
     )
 }
 
-export default Register;
+export default RegisterPage;
