@@ -52,24 +52,7 @@ function RegisterPage() {
                     <label htmlFor="email">Email</label>
                     <input type="email" id="email" name="email" required placeholder="example@example.com" />
 
-                    <label htmlFor="address">Barangay</label>
-                    <div className="select-wrapper">
-                        <select id="barangay" name="barangay" required style={{ paddingRight: '44px' }}>
-                            <option value="" disabled selected hidden>Select Barangay</option>
-                            <option value="barangay-simpokan">Barangay Simpokan</option>
-                            <option value="barangay-napsan">Barangay Napsan</option>
-                            <option value="barangay-bagong-bayan">Barangay Bagong Bayan</option>
-                        </select>
-                        <div className="select-icon">
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-                                <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-                                <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
-                                <g id="SVGRepo_iconCarrier">
-                                    <path d="M7 10L12 15L17 10" stroke="#000000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"></path>
-                                </g>
-                            </svg>
-                        </div>
-                    </div>
+                   
 
 
                     <label htmlFor="password">Password</label>
