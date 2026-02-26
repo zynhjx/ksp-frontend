@@ -15,12 +15,13 @@
     max-width: 450px;
     min-width: 0;
     border-radius: 12px;
-    padding: 32px;
+    padding: 108px 32px 32px;
     border: solid 1px var(--border);
     display: flex;
     flex-direction: column;
     align-items: center;
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    position: relative;
 }
 
 .login .form-container {
@@ -28,15 +29,18 @@
 }
 
 .form-container .head-logo {
-    width: 100px;
-    height: 100px;
-    margin: 0 0 8px;
+    width: 150px;
+    height: 150px;
+    position: absolute;
+    top: 0;
+    translate: 0 -30%;
 }
 
 .form-container h2 {
     text-align: center;
     margin: 0 0 8px;
     color: #333;
+    font-size: 32px;
 }
 
 .form-container p {
@@ -181,6 +185,8 @@
         min-height: 100vh;
     }
 
+    
+
     .form-container {
         width: 100%;
         max-width: none;
@@ -189,6 +195,19 @@
         border: none;
         box-shadow: none;
         margin-top: 36px;
+        position: relative;
+    }
+
+    .login .form-container {
+        max-width: none;
+    }
+
+    .form-container .head-logo {
+        position: static;
+        translate: 0 0;
+        height: 100px;
+        width: 100px;
+        margin-bottom: 4px;
     }
 
     .form-container form {

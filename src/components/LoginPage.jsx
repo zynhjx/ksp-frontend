@@ -58,7 +58,7 @@ function LoginPage() {
                             {showPassword ? EyeOpen : EyeClosed}
                         </span>
                     </div>
-                    <button type="submit">Submit</button>
+                    <button type="submit">Log In</button>
                 </form>
                 <div className="redirect-container">
                     <span>Do not have an account? </span>

@@ -112,7 +112,7 @@ function RegisterPage() {
                         </span>
                     </div>
 
-                    <button type="submit">Submit</button>
+                    <button type="submit">Register</button>
                 </form>
                 <div className="redirect-container">
                     <span>Already have an account? </span>
