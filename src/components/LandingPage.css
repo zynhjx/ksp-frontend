@@ -283,7 +283,7 @@ section.redirect-reg {
     text-align: center;
 }
 
-.redirect-reg-container button {
+.redirect-reg-container .btn {
     border: none;
     height: 40px;
     padding: 0 16px;
@@ -313,8 +313,21 @@ footer p {
 }
 
 @media (max-width: 768px) {
+    .landing-header {
+        height: 60px;
+    }
+
+    nav.landing-nav {
+        gap: 8px;
+    }
+
     .hero-title {
         font-size: 36px;
+    }
+
+
+    .header-container {
+        padding: 0 16px;
     }
 
     .feature-grid {

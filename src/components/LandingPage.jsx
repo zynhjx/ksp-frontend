@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
-import "./Landing.css";
+import "./LandingPage.css";
 
 const Landing = () => {
 	return (
 		<div className="landing-page">
 			<header className="landing-header">
                 <div className="header-container">
-                    <div className="logo">KSP - Kulang sa Pera</div>
+                    <div className="logo">KSP</div>
                     <nav className="landing-nav">
                         <Link to="/auth/login">
                             <button className="heading-nav-btn primary-btn">Sign In</button>
@@ -140,7 +140,10 @@ const Landing = () => {
                         Ready to Get Started?
                     </h2>
                     <p>Join the platform and start managing youth profiles for your barangay.</p>
-                    <button>Create Your Account</button>
+                    <Link to="/auth/register">
+                        <button className="btn">Create Your Account</button>
+                    </Link>
+                    
                 </div>
             </section>
             <footer>
