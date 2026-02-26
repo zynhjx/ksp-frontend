@@ -1,6 +1,7 @@
 import "./auth.css"
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import Logo from "../assets/pngs/ksp-logo.png";
 
 function RegisterPage() {
 
@@ -29,7 +30,10 @@ function RegisterPage() {
     return (
         <div className="form-page">
             <div className="form-container">
-                <img className="head-logo" src="../src/assets/pngs/ksp-logo.png" alt=""/>
+                <Link className="logo-container" to="/">
+                    <img className="head-logo" src={Logo} alt=""/>
+                </Link>
+                
                 <h2>Create your account</h2>
                 <p>Please fill in your details to create an account.</p>
                 <form>

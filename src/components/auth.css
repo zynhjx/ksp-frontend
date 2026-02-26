@@ -28,12 +28,16 @@
     max-width: 400px;
 }
 
-.form-container .head-logo {
-    width: 150px;
-    height: 150px;
+.form-container .logo-container {
     position: absolute;
     top: 0;
     translate: 0 -30%;
+}
+
+.form-container .head-logo {
+    width: 150px;
+    height: 150px;
+    cursor: pointer;
 }
 
 .form-container h2 {
@@ -202,20 +206,25 @@
         max-width: none;
     }
 
-    .form-container .head-logo {
+    .form-container .logo-container {
         position: static;
         translate: 0 0;
+    }
+
+    .form-container .head-logo {  
         height: 100px;
         width: 100px;
         margin-bottom: 4px;
     }
 
+    /* .form-container .logo-container {
+    position: absolute;
+    top: 0;
+    translate: 0 -30%;
+} */
+
     .form-container form {
         width: 100%;
-    }
-
-    .form-container h2 {
-        font-size: 36px;
     }
 
     .form-container p {
