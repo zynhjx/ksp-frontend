@@ -1,10 +1,12 @@
 import "./auth.css"
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../assets/pngs/ksp-logo.png";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function RegisterPage() {
-
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfPassword, setShowConfPassword] = useState(false);
     const EyeClosed = (
@@ -26,6 +28,59 @@ function RegisterPage() {
             </g>
         </svg>
     );
+
+    const [formData, setFormData] = useState({
+        first_name: "",
+        last_name: "",
+        email: "",
+        password: "",
+    });
+    const [confPassword, setConfPassword] = useState("");
+    const [formError, setFormError] = useState("");
+
+    const handleChange = (e) => {
+        if (e.target.name === "conf-password") {
+            setConfPassword(e.target.value);
+        } else {
+            setFormData({ ...formData, [e.target.name]: e.target.value });
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // Prevent page reload
+        setFormError("");
+        if (formData.password.length < 8) {
+            setFormError("Password must be at least 8 characters long.");
+            return;
+        }
+        if (formData.password !== confPassword) {
+            setFormError("Passwords do not match.");
+            return;
+        }
+        try {
+            const response = await fetch("http://localhost:5000/api/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json", // Tell backend it's JSON
+                },
+                body: JSON.stringify(formData), // Convert JS object to JSON
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                toast.error(data.error || "Registration failed");
+            } else {
+                toast.success("Account successfully registered!");
+                setFormData({ first_name: "", last_name: "", email: "", password: "" });
+                setConfPassword("");
+                setTimeout(() => {
+                    navigate("/dashboard");
+                }, 2000); // waits 2 seconds
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Server error. Please try again.");
+        }
+    };
     
     return (
         <div className="form-page">
@@ -36,23 +91,42 @@ function RegisterPage() {
                 
                 <h2>Create your account</h2>
                 <p>Please fill in your details to create an account.</p>
-                <form>
+                <form onSubmit={handleSubmit}>
     
                     <div className="info-row">
                         <div className="info-col">
                             <label htmlFor="firstname">First Name</label>
-                            <input type="text" id="firstname" name="firstname" required placeholder="Juan" />
+                            <input
+                                type="text"
+                                id="firstname"
+                                name="first_name"
+                                value={formData.first_name}
+                                onChange={handleChange}
+                                required
+                                placeholder="Juan" />
                         </div>
                         <div className="info-col">
                             <label htmlFor="lastname">Last Name</label>
-                            <input type="text" id="lastname" name="lastname" required placeholder="Dela Cruz" />
+                            <input 
+                                type="text" 
+                                id="lastname" 
+                                name="last_name" 
+                                value={formData.last_name}
+                                onChange={handleChange}
+                                required 
+                                placeholder="Dela Cruz" />
                         </div>
                     </div>
 
                     <label htmlFor="email">Email</label>
-                    <input type="email" id="email" name="email" required placeholder="example@example.com" />
-
-                   
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        value={formData.email}
+                        onChange={handleChange}
+                        required 
+                        placeholder="example@example.com" />     
 
 
                     <label htmlFor="password">Password</label>
@@ -60,6 +134,8 @@ function RegisterPage() {
                         <input
                             type={showPassword ? "text" : "password"}
                             className="password"
+                            value={formData.password}
+                            onChange={handleChange}
                             id="password"
                             name="password"
                             required
@@ -78,12 +154,14 @@ function RegisterPage() {
                     </div>
 
                     <label htmlFor="conf-password">Confirm Password</label>
-                    <div className="password-wrapper">
+                    <div className="password-wrapper" style={{ marginBottom: '8px' }}>
                         <input
                             type={showConfPassword ? "text" : "password"}
                             className="password"
                             id="conf-password"
                             name="conf-password"
+                            value={confPassword}
+                            onChange={handleChange}
                             required
                             placeholder="••••••••••"
                         />
@@ -98,6 +176,7 @@ function RegisterPage() {
                             {showConfPassword ? EyeOpen : EyeClosed}
                         </span>
                     </div>
+                    {formError && <div style={{ color: 'red', marginBottom: '16px' }}>{formError}</div>}
 
                     <button type="submit">Register</button>
                 </form>
