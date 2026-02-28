@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
+import { apiFetch } from "../api";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -8,7 +9,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const init = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/me", {
+        const res = await apiFetch("http://localhost:5000/api/me", {
           credentials: "include"
         });
 
