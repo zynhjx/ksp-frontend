@@ -1,12 +1,15 @@
 import "./auth.css"
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../assets/pngs/ksp-logo.png";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { AuthContext } from "../contexts/AuthContext"; 
+
 
 function RegisterPage() {
     const navigate = useNavigate();
+    const { login } = useContext(AuthContext);
     const [showPassword, setShowPassword] = useState(false);
     const [showConfPassword, setShowConfPassword] = useState(false);
     const EyeClosed = (
@@ -61,20 +64,23 @@ function RegisterPage() {
             const response = await fetch("http://localhost:5000/api/register", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json", // Tell backend it's JSON
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(formData), // Convert JS object to JSON
+                credentials: "include", // 🔥 important for cookies!
+                body: JSON.stringify(formData),
             });
             const data = await response.json();
-            if (!response.ok) {
-                toast.error(data.error || "Registration failed");
-            } else {
-                toast.success("Account successfully registered!");
+            if (response.status === 201) {
+                login(data.user); 
+                toast.success(data.message, data.user || "Account successfully registered!");
+            
                 setFormData({ first_name: "", last_name: "", email: "", password: "" });
                 setConfPassword("");
                 setTimeout(() => {
                     navigate("/dashboard");
-                }, 2000); // waits 2 seconds
+                }, 2000);
+            } else if (!response.ok) {
+                toast.error(data.error || data.message || "Registration failed");
             }
         } catch (err) {
             console.error(err);

@@ -1,11 +1,14 @@
 import "./auth.css"
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import Logo from "../assets/pngs/ksp-logo.png";
+import { toast } from "react-toastify";
+import { AuthContext } from "../contexts/AuthContext";
 
 function LoginPage() {
-
+    const {login} = useContext(AuthContext)
     const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate()
     const EyeClosed = (
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -25,6 +28,45 @@ function LoginPage() {
             </g>
         </svg>
     );
+
+    const [formData, setFormData] = useState({
+        email: "",
+        password: "",
+    });
+    
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault(); // Prevent page reload
+        try {
+            const response = await fetch("http://localhost:5000/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include", // 🔥 important for cookies!
+                body: JSON.stringify(formData),
+            });
+            const data = await response.json();
+            if (response.status === 200) {
+                login(data.user); // assuming you have a login function in context
+                toast.success(data.message || "Successfully Logged In!");
+
+                setFormData({ email: "", password: "" }); // reset login form
+
+                setTimeout(() => {
+                    navigate("/dashboard"); // redirect to dashboard
+                }, 2000);
+            } else if (!response.ok) {
+                toast.error(data.error || data.message || "Login failed");
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Server error. Please try again.");
+        }
+    };
     
     return (
         <div className="form-page login">
@@ -34,9 +76,9 @@ function LoginPage() {
                 </Link>
                 <h2>Welcome Back</h2>
                 <p>Please enter your credentials to continue.</p>
-                <form>
+                <form onSubmit={handleSubmit}>
                     <label htmlFor="email">Email</label>
-                    <input type="email" id="email" name="email" required placeholder="example@example.com" />
+                    <input type="email" onChange={handleChange} id="email" name="email" required placeholder="example@example.com" />
 
 
                     <label htmlFor="password">Password</label>
@@ -44,6 +86,7 @@ function LoginPage() {
                         <input
                             type={showPassword ? "text" : "password"}
                             className="password"
+                            onChange={handleChange}
                             id="password"
                             name="password"
                             required

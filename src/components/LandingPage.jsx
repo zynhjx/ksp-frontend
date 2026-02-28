@@ -1,19 +1,32 @@
 import { Link } from "react-router-dom";
 import "./LandingPage.css";
+import { useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
+import LoadingSpinner from "./LoadingSpinner";
 
 const Landing = () => {
+    const {user, loading} = useContext(AuthContext)
+    if (loading) return <LoadingSpinner />
 	return (
 		<div className="landing-page">
 			<header className="landing-header">
                 <div className="header-container">
                     <div className="logo">KSP</div>
+                    
                     <nav className="landing-nav">
-                        <Link to="/auth/login">
-                            <button className="heading-nav-btn primary-btn">Sign In</button>
-                        </Link>
-                        <Link to="/auth/register">
-                            <button className="heading-nav-btn secondary-btn">Get Started</button>
-                        </Link>
+                        {user ? <Link to="/dashboard" className="secondary-btn heading-nav-btn">
+                            Go to Dashboard
+                        </Link> : 
+                        <>
+                            <Link to="/auth/login" className="heading-nav-btn primary-btn">
+                                Sign In
+                            </Link>
+                            <Link to="/auth/register" className="heading-nav-btn secondary-btn">
+                                Get Started
+                            </Link>
+                        </>
+                        }
+                        
                     </nav>
                 </div>
 				
