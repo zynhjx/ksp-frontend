@@ -24,10 +24,12 @@
 }
 
 .logo {
-	font-size: 1.2rem;
-	font-weight: 700;
-	color: #0058A3;
-	letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 45px;
 }
 
 nav.landing-nav {

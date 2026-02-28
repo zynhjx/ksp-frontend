@@ -1,8 +1,8 @@
 
 import { Navigate } from 'react-router-dom'
-import './Dashboard.css'
+import './YouthDashboard.css'
 
-function Dashboard() {
+function YouthDashboard() {
 
 
     return (
@@ -12,4 +12,4 @@ function Dashboard() {
     )
 }
 
-export default Dashboard
+export default YouthDashboard

@@ -1,6 +1,6 @@
 import "./auth.css"
 import { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate} from "react-router-dom";
 import Logo from "../assets/pngs/ksp-logo.png";
 import { toast } from "react-toastify";
 import { AuthContext } from "../contexts/AuthContext";
@@ -8,7 +8,6 @@ import { AuthContext } from "../contexts/AuthContext";
 function LoginPage() {
     const {login} = useContext(AuthContext)
     const [showPassword, setShowPassword] = useState(false);
-    const navigate = useNavigate()
     const EyeClosed = (
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -57,7 +56,16 @@ function LoginPage() {
                 setFormData({ email: "", password: "" }); // reset login form
 
                 setTimeout(() => {
-                    navigate("/dashboard"); // redirect to dashboard
+                    switch (data.user.role) {
+                        case "Youth":
+                            return <Navigate to="/dashboard/youth" replace />;
+                        case "SK":
+                            return <Navigate to="/dashboard/sk" replace />;
+                        case "Admin":
+                            return <Navigate to="/dashboard/admin" replace />;
+                        default:
+                            return <Navigate to="/" replace />; // fallback if role is unknown
+                        }
                 }, 2000);
             } else if (!response.ok) {
                 toast.error(data.error || data.message || "Login failed");

@@ -4,7 +4,9 @@ import RegisterPage from './components/RegisterPage'
 import LoginPage from './components/LoginPage'
 import {BrowserRouter, Routes, Route } from "react-router-dom"
 import './App.css'
-import Dashboard from './components/Dashboard'
+import YouthDashboard from './components/YouthDashboard'
+// import SkDashboard from './components/SkDashboard'
+import AdminDashboard from './components/AdminDashboard'
 import PrivateRoute from './components/PrivateRoute'
 import PublicRoute from './components/PublicRoute'
 
@@ -15,7 +17,9 @@ function App() {
         <Route path='/' element={<LandingPage />} />
         <Route path='/auth/register' element={<PublicRoute><RegisterPage /></PublicRoute>} />
         <Route path='/auth/login' element={<PublicRoute><LoginPage /></PublicRoute>}/>
-        <Route path='/dashboard' element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path='/dashboard/youth' element={<PrivateRoute><YouthDashboard /></PrivateRoute>} />
+        {/* <Route path='/dashboard/sk' element={<PrivateRoute><SkDashboard /></PrivateRoute>} /> */}
+        <Route path='/dashboard/admin' element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
       </Routes>
     </BrowserRouter>
   )

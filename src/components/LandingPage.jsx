@@ -3,29 +3,43 @@ import "./LandingPage.css";
 import { useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import LoadingSpinner from "./LoadingSpinner";
+import Logo from '../assets/pngs/kspLogoWithName.png'
 
 const Landing = () => {
     const {user, loading} = useContext(AuthContext)
+    const dashboardPaths = {
+        Youth: "/dashboard/youth",
+        SK: "/dashboard/sk",
+        Admin: "/dashboard/admin",
+    };
     if (loading) return <LoadingSpinner />
 	return (
+        
 		<div className="landing-page">
 			<header className="landing-header">
                 <div className="header-container">
-                    <div className="logo">KSP</div>
+                    <div className="logo">
+                        <img src={Logo} alt="" />
+                    </div>
                     
                     <nav className="landing-nav">
-                        {user ? <Link to="/dashboard" className="secondary-btn heading-nav-btn">
-                            Go to Dashboard
-                        </Link> : 
-                        <>
-                            <Link to="/auth/login" className="heading-nav-btn primary-btn">
+                        {user ? (
+                            <Link
+                                to={dashboardPaths[user.role] || "/"} // fallback if role unknown
+                                className="secondary-btn heading-nav-btn"
+                            >
+                                Go to Dashboard
+                            </Link>
+                            ) : (
+                            <>
+                                <Link to="/auth/login" className="heading-nav-btn primary-btn">
                                 Sign In
-                            </Link>
-                            <Link to="/auth/register" className="heading-nav-btn secondary-btn">
+                                </Link>
+                                <Link to="/auth/register" className="heading-nav-btn secondary-btn">
                                 Get Started
-                            </Link>
-                        </>
-                        }
+                                </Link>
+                            </>
+                        )}
                         
                     </nav>
                 </div>

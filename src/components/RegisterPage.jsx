@@ -77,7 +77,7 @@ function RegisterPage() {
                 setFormData({ first_name: "", last_name: "", email: "", password: "" });
                 setConfPassword("");
                 setTimeout(() => {
-                    navigate("/dashboard");
+                    navigate("/dashboard/youth");
                 }, 2000);
             } else if (!response.ok) {
                 toast.error(data.error || data.message || "Registration failed");
