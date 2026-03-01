@@ -112,14 +112,21 @@
     gap: 10px;
     text-decoration: none;
     user-select: none;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar .nav-wrapper.active {
     background: #0a6dc4ce;
+    
+}
+
+.sidebar.extended .nav-wrapper.active {
+    transform: translateX(10px);
 }
 
 .sidebar nav .nav-wrapper:hover {
     background: var(--blue-hover);
+    
 }
 
 /* Text inside nav-wrapper */
