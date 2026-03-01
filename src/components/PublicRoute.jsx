@@ -9,11 +9,11 @@ export default function PrivateRoute({ children }) {
   if (user) {
     switch (user.role) {
       case "Youth":
-        return <Navigate to="/dashboard/youth" replace />;
+        return <Navigate to="/youth/dashboard" replace />;
       case "SK":
-        return <Navigate to="/dashboard/sk" replace />;
+        return <Navigate to="/sk/dashboard" replace />;
       case "Admin":
-        return <Navigate to="/dashboard/admin" replace />;
+        return <Navigate to="/admin/dashboard" replace />;
       default:
         return <Navigate to="/" replace />; // fallback if role is unknown
     }

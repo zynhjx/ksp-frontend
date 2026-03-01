@@ -2,24 +2,44 @@
 import LandingPage from './components/LandingPage'
 import RegisterPage from './components/RegisterPage'
 import LoginPage from './components/LoginPage'
-import {BrowserRouter, Routes, Route } from "react-router-dom"
+import {BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import './App.css'
 import YouthDashboard from './components/YouthDashboard'
 // import SkDashboard from './components/SkDashboard'
 import AdminDashboard from './components/AdminDashboard'
 import PrivateRoute from './components/PrivateRoute'
 import PublicRoute from './components/PublicRoute'
+import AccessDenied from './components/AccessDenied'
+import AppLayout from './components/AppLayout'
+import { SidebarProvider } from './contexts/SidebarProvider'
+import AdminSkManagement from './components/AdminSkManagement'
+import AdminBarangays from './components/AdminBarangays'
+import AdminReports from './components/AdminReports'
+import AdminSettings from './components/AdminSettings'
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path='/forbidden' element={<AccessDenied />} />
         <Route path='/' element={<LandingPage />} />
         <Route path='/auth/register' element={<PublicRoute><RegisterPage /></PublicRoute>} />
         <Route path='/auth/login' element={<PublicRoute><LoginPage /></PublicRoute>}/>
-        <Route path='/dashboard/youth' element={<PrivateRoute><YouthDashboard /></PrivateRoute>} />
+        <Route path='/youth/dashboard' element={<PrivateRoute allowedRoles={["Youth"]}><YouthDashboard /></PrivateRoute>} />
         {/* <Route path='/dashboard/sk' element={<PrivateRoute><SkDashboard /></PrivateRoute>} /> */}
-        <Route path='/dashboard/admin' element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
+        
+        <Route path='/admin' element={<PrivateRoute allowedRoles={["Admin"]}>
+          <SidebarProvider >
+            <AppLayout />
+          </SidebarProvider>
+        </PrivateRoute>}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="sk-management" element={<AdminSkManagement />} />
+          <Route path="barangays" element={<AdminBarangays />} />
+          <Route path="reports" element={<AdminReports />} />
+          <Route path="settings" element={<AdminSettings />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   )

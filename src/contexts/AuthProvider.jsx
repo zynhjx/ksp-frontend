@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 import { apiFetch } from "../api";
+import { toast } from "react-toastify";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -28,20 +29,27 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (userData) => {
-    // no need to store token or user in localStorage
     setUser(userData);
   };
 
   const logout = async () => {
     try {
-      await fetch("http://localhost:5000/api/logout", {
+      const res = await fetch("http://localhost:5000/api/logout", {
         method: "POST",
         credentials: "include",
       });
+
+      if (!res.ok) {
+        throw new Error("Logout failed");
+      }
+      
+      toast.success("Successfully logged out!");
+
     } catch (err) {
       console.error(err);
+      toast.warn("Could not notify server, but logging out locally.");
     } finally {
-      setUser(null);
+      setUser(null); // force local logout
     }
   };
 

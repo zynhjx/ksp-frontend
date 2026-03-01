@@ -1,41 +1,204 @@
+/* =========================
+   Sidebar Base Styles
+   ========================= */
 .sidebar {
     position: fixed;
-    top: 70px;
+    top: 0;
     left: 0;
     bottom: 0;
-    padding: 0 16px;
+    width: 260px;
+    padding: 16px 32px 16px 16px;
+    background-color: var(--theme-blue);
+    transition: 
+        width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        padding 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Sidebar Variants */
+.sidebar.extended {
+    width: 260px;
 }
 
 .sidebar.shrinked {
     width: 46px;
-    
+    padding: 16px;
+}
+
+/* =========================
+   Menu Container
+   ========================= */
+.menu-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 40px;
+    height: 46px;
+    gap: 20px;
+}
+
+/* =========================
+   Logo
+   ========================= */
+.logo img {
+    height: 36px;
+    user-select: none;
+}
+
+.sidebar .menu-container .logo {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.sidebar.shrinked .menu-container .logo {
+    opacity: 0;
+    transform: translateX(-10px);
+}
+
+/* =========================
+   Menu Bar (Toggle Button)
+   ========================= */
+.menu-bar {
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.menu-bar:hover {
+    background: var(--blue-hover);
+}
+
+/* =========================
+   Navigation / Sidebar Items
+   ========================= */
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .sidebar.shrinked nav {
     width: 100%;
-    display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 20px;
 }
 
-.sidebar.sidebar.shrinked nav > * {
-    height: 46px;
+.sidebar .sidebar-item {
     width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+
+/* =========================
+   Navigation Wrapper
+   ========================= */
+.sidebar .nav-wrapper {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
     border-radius: 16px;
     cursor: pointer;
+    width: 100%;
+    gap: 10px;
+    text-decoration: none;
+    user-select: none;
 }
 
-.sidebar.sidebar.shrinked nav > *:hover {
-    background: var(--hovered);
+.sidebar .nav-wrapper.active {
+    background: #0a6dc4ce;
 }
 
-.sidebar.extended {
-    width: 350px;
+.sidebar nav .nav-wrapper:hover {
+    background: var(--blue-hover);
 }
 
-.sidebar nav .sidebar-item {
+/* Text inside nav-wrapper */
+.sidebar .nav-wrapper h3 {
+    margin: 0;
+    padding: 0;
+    color: white;
+    font-weight: 100;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.sidebar.extended .nav-wrapper h3 {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.sidebar.shrinked .nav-wrapper h3 {
+    opacity: 0;
+    overflow: hidden;
+}
+
+/* Nav-wrapper alignment */
+.sidebar.extended .nav-wrapper {
+    justify-content: flex-start;
+}
+
+.sidebar.shrinked .nav-wrapper {
+    justify-content: flex-start;
+}
+
+/* =========================
+   Logout Button
+   ========================= */
+.logout-btn {
+    margin-top: auto;
+    background-color: var(--blue-hover);
+    border-radius: 16px;
+    height: 46px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    overflow: hidden;
+    gap: 10px;
+    cursor: pointer;
+    color: white; /* for text if any */
+}
+
+.icon-container {
+    width: 46px;
+    height: 46px;
     display: flex;
     justify-content: center;
     align-items: center;
+    border-radius: 16px;
+    flex-shrink: 0;
+}
+
+
+.logout-btn h3 {
+    margin: 0;
+    padding: 0;
+    color: white;
+    font-weight: 100;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.sidebar.extended .logout-btn h3 {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.sidebar.shrinked .logout-btn h3 {
+    opacity: 0;
+    overflow: hidden;
 }

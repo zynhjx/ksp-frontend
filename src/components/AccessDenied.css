@@ -1,0 +1,48 @@
+.access-denied-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background: #f8f9fa; /* light gray background */
+  font-family: Arial, sans-serif;
+  text-align: center;
+  color: #333;
+}
+
+/* Large 403 code */
+.access-denied-container h1 {
+  font-size: 8rem;
+  font-weight: bold;
+  color: #e74c3c; /* red */
+  margin: 0;
+}
+
+/* Subheading */
+.access-denied-container h2 {
+  font-size: 2.5rem;
+  margin: 1rem 0;
+}
+
+/* Description text */
+.access-denied-container p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: #555;
+}
+
+/* Button */
+.access-denied-button {
+  padding: 0.75rem 2rem;
+  background-color: #3498db; /* blue button */
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.access-denied-button:hover {
+  background-color: #2980b9;
+}

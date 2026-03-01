@@ -8,9 +8,9 @@ import Logo from '../assets/pngs/kspLogoWithName.png'
 const Landing = () => {
     const {user, loading} = useContext(AuthContext)
     const dashboardPaths = {
-        Youth: "/dashboard/youth",
-        SK: "/dashboard/sk",
-        Admin: "/dashboard/admin",
+        Youth: "/youth/dashboard",
+        SK: "sk/dashboard",
+        Admin: "/admin/dashboard",
     };
     if (loading) return <LoadingSpinner />
 	return (
