@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import './BarangayManagement.css';
+import styles from './BarangayManagement.module.css';
 import AddEditBarangayModal from './AddEditBarangayModal';
 import ViewSkOfficialsModal from './ViewSkOfficialsModal';
+import Table from './Table';
 
 function BarangayManagement() {
   const [search, setSearch] = useState('');
@@ -23,18 +24,24 @@ function BarangayManagement() {
     {
       id: 1,
       name: 'Napsan',
+      total_youth: 15,
+      active_youth: 12, 
       status: 'Active',
       skOfficials: [1, 2]
     },
     {
       id: 2,
       name: 'Simpokan',
+      total_youth: 14,
+      active_youth: 12, 
       status: 'Active',
       skOfficials: [3]
     },
     {
       id: 3,
       name: 'Bagong Bayan',
+      total_youth: 15,
+      active_youth: 8, 
       status: 'Inactive',
       skOfficials: [4]
     }
@@ -100,22 +107,22 @@ function BarangayManagement() {
   };
 
   return (
-    <div className="barangay-management-page">
-      <div className="page-header">
+    <div className={styles.barangayManagementPage}>
+      <div className={styles.pageHeader}>
         <div>
           <h1>Barangay Management</h1>
-          <p className="subtitle">Manage barangay information and SK officials</p>
+          <p className={styles.subtitle}>Manage barangay information and SK officials</p>
         </div>
         <button
-          className="add-btn"
+          className={styles.addBtn}
           onClick={handleAddBarangay}
         >
           + Add Barangay
         </button>
       </div>
 
-      <div className="search-filter-section">
-        <div className="search-bar">
+      <div className={styles.searchFilterSection}>
+        <div className={styles.searchBar}>
           <input
             type="text"
             placeholder="Search barangay name..."
@@ -123,7 +130,7 @@ function BarangayManagement() {
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
-        <div className="filters">
+        <div className={styles.filters}>
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
@@ -135,53 +142,14 @@ function BarangayManagement() {
         </div>
       </div>
 
-      <div className="table-wrapper">
-        <table className="barangay-table">
-          <thead>
-            <tr>
-              <th id='name'>Barangay Name</th>
-              <th>SK Officials</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((barangay) => (
-              <tr key={barangay.id} className={barangay.status === 'Inactive' ? 'inactive-row' : ''}>
-                <td className="barangay-name">{barangay.name}</td>
-                <td className="sk-officials-count">
-                  <button
-                    className="sk-count-btn"
-                    onClick={() => handleViewSkOfficials(barangay.id)}
-                    title="Click to view SK officials"
-                  >
-                    {barangay.skOfficials.length}
-                  </button>
-                </td>
-                <td className="status">
-                  <span className={`badge ${barangay.status.toLowerCase()}`}>
-                    {barangay.status}
-                  </span>
-                </td>
-                <td className="actions">
-                  <button
-                    className="edit-btn"
-                    onClick={() => handleEditBarangay(barangay.id)}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    className="remove-btn"
-                    onClick={() => handleRemoveBarangay(barangay.id)}
-                  >
-                    Remove
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table
+        data={filtered}
+        hasActions={true}
+        skTable={false}
+        handleViewSkOfficials={handleViewSkOfficials}
+        />
+
+      
 
       <AddEditBarangayModal
         isOpen={isAddEditModalOpen}
@@ -189,6 +157,7 @@ function BarangayManagement() {
         onSave={handleSaveBarangay}
         barangay={editingBarangay}
         allSkOfficials={skOfficialsList}
+        
       />
 
       <ViewSkOfficialsModal

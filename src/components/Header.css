@@ -1,3 +1,4 @@
+/* ===== HEADER ===== */
 .header {
     height: 70px;
     position: fixed;
@@ -7,34 +8,141 @@
     display: flex;
     align-items: center;
     padding: 0 16px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    z-index: 999;
 }
 
+/* ===== LEFT SECTION ===== */
 .left {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
+/* ===== MENU TOGGLE BUTTON ===== */
 .left .menu-container {
-    height: 46px;
-    width: 46px;
-    border-radius: 50%;
+    height: 48px;
+    width: 48px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
+    background: #f5f5f5;
+    border: none;
+    padding: 0;
+    margin: 0;
+    flex-shrink: 0;
 }
 
 .left .menu-container:hover {
-    background-color: var(--hovered);
+    background: #e8e8e8;
 }
 
+.left .menu-container:active {
+    transform: scale(0.95);
+}
+
+.left .menu-container .menu-icon {
+    width: 24px;
+    height: 24px;
+    color: #333;
+    transition: color 0.2s ease;
+}
+
+.left .menu-container:hover .menu-icon {
+    color: #007bff;
+}
+
+/* ===== LOGO ===== */
 .left .logo {
     display: flex;
     align-items: center;
+    text-decoration: none;
 }
 
 .left .logo img {
     height: 50px;
+    user-select: none;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+/* Tablet: 769px - 1024px */
+@media (max-width: 1024px) {
+    .header {
+        padding: 0 12px;
+    }
+
+    .left .logo img {
+        height: 45px;
+    }
+}
+
+/* Mobile: Below 768px - Enhance menu button visibility */
+@media (max-width: 768px) {
+    .header {
+        height: 64px;
+        padding: 0 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .left {
+        gap: 12px;
+    }
+
+    .left .menu-container {
+        height: 44px;
+        width: 44px;
+        border-radius: 6px;
+        background: #007bff;
+        box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+    }
+
+    .left .menu-container:hover {
+        background: #0056b3;
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+    }
+
+    .left .menu-container .menu-icon {
+        color: white;
+    }
+
+    .left .menu-container:hover .menu-icon {
+        color: white;
+    }
+
+    .left .logo img {
+        height: 40px;
+    }
+}
+
+/* Small Mobile: Below 480px */
+@media (max-width: 480px) {
+    .header {
+        height: 60px;
+        padding: 0 10px;
+    }
+
+    .left {
+        gap: 10px;
+    }
+
+    .left .menu-container {
+        height: 40px;
+        width: 40px;
+        min-width: 40px;
+        box-shadow: 0 2px 4px rgba(0, 123, 255, 0.25);
+    }
+
+    .left .menu-container .menu-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .left .logo img {
+        height: 35px;
+    }
 }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import './AdminSkManagement.css';
+import styles from './AdminSkManagement.module.css';
 import AddSkModal from './AddSkModal';
+import Table from './Table';
 
 function AdminSkManagement() {
   // placeholder list; replace with API data later
@@ -73,21 +74,21 @@ function AdminSkManagement() {
   };
 
   return (
-    <div className="sk-management-page">
-      <div className="page-header">
+    <div className={styles['sk-management-page']}>
+      <div className={styles['page-header']}>
         <div>
           <h1>SK Management</h1>
-          <p className="subtitle">
+          <p className={styles.subtitle}>
             Manage barangay SK officials and their details
           </p>
         </div>
-        <button className="add-btn" onClick={() => setIsModalOpen(true)}>
+        <button className={styles['add-btn']} onClick={() => setIsModalOpen(true)}>
           + Add SK Official
         </button>
       </div>
 
-      <div className="controls-row">
-        <div className="search-bar">
+      <div className={styles['controls-row']}>
+        <div className={styles['search-bar']}>
           <input
             type="text"
             placeholder="Search by name or email"
@@ -95,7 +96,7 @@ function AdminSkManagement() {
             onChange={handleSearchChange}
           />
         </div>
-        <div className="filters">
+        <div className={styles.filters}>
           <select
             value={filterBarangay}
             onChange={(e) => setFilterBarangay(e.target.value)}
@@ -126,46 +127,20 @@ function AdminSkManagement() {
         </div>
       </div>
 
-      <div className="bulk-actions">
-        <button className="export-btn">Export CSV</button>
-        <button className="export-btn">Export PDF</button>
-        <button className="activate-btn">Bulk Activate</button>
-        <button className="deactivate-btn">Bulk Deactivate</button>
+      <div className={styles['bulk-actions']}>
+        <button className={styles['export-btn']}>Export CSV</button>
+        <button className={styles['export-btn']}>Export PDF</button>
+        <button className={styles['activate-btn']}>Bulk Activate</button>
+        <button className={styles['deactivate-btn']}>Bulk Deactivate</button>
       </div>
 
-      <div className="table-wrapper">
-        <table className="sk-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Position</th>
-              <th>Barangay</th>
-              <th>Email</th>
-              <th className='center'>Status</th>
-              <th className=''></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((sk) => (
-              <tr
-                key={sk.id}
-                className={sk.status === 'Inactive' ? 'inactive' : ''}
-                onClick={() => handleRowClick(sk.id)}
-              >
-                <td>{sk.name}</td>
-                <td>{sk.position}</td>
-                <td>{sk.barangay}</td>
-                <td>{sk.email}</td>
-                <td className='center'>{sk.status}</td>
-                <td className="actions center">
-                  <button className="edit-btn">Edit</button>
-                  <button className="delete-btn">Remove</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table
+        data={filtered}
+        skTable={true}
+        handleRowClick={handleRowClick}
+        hasActions={true}
+      />
+
       <AddSkModal
         isOpen={isModalOpen}
         onClose={handleModalClose}

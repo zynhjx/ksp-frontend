@@ -1,8 +1,9 @@
 .admin-dashboard-page {
+    padding: 0 2rem 2rem;
     width: 100%;
     min-height: 100vh;
     box-sizing: border-box;
-    background: transparent;
+    background: var(--bg-color, #f5f7fa);
 }
 
 .dashboard-title {

@@ -1,5 +1,5 @@
-import { useContext } from 'react'
-import { Link } from "react-router-dom";
+import { useContext, useEffect, useState, useRef } from 'react'
+import { Link, useLocation } from "react-router-dom";
 import './Sidebar.css'
 import Logo from "../assets/pngs/kspLogoWithName.png"
 import LogoName from "../assets/pngs/ksp-name.png"
@@ -20,6 +20,30 @@ function Sidebar({ activePath }) {
     const MySwal = withReactContent(Swal);
     const { user, logout } = useContext(AuthContext)
     const { sidebarOpen, setSidebarOpen, toggleSidebar } = useContext(SidebarContext);
+    const location = useLocation();
+    // treat both mobile and tablet widths as small screens
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+    const prevPathname = useRef(location.pathname);
+
+    // Detect mobile screen size
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 1024);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Close sidebar after navigating on mobile (only on actual route changes)
+    useEffect(() => {
+        if (prevPathname.current !== location.pathname) {
+            prevPathname.current = location.pathname;
+            if (isMobile && sidebarOpen) {
+                setSidebarOpen(false);
+            }
+        }
+    }, [location.pathname, isMobile, sidebarOpen, setSidebarOpen]);
 
     const handleLogout = () =>  {
       MySwal.fire({

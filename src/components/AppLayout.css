@@ -1,18 +1,156 @@
+/* ===== APP LAYOUT ===== */
 .app-layout {
     display: flex;
     min-height: 100vh;
+    position: relative;
 }
 
+/* ===== MAIN CONTENT ===== */
 .main-content {
     flex: 1;   
     width: 100%;
     margin-left: 80px;
     transition: margin-left 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                filter 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     padding: 36px;
+    background: transparent;
 }
 
 .main-content.sidebar-open {
     margin-left: 310px;
+}
+
+/* ===== SIDEBAR BACKDROP OVERLAY ===== */
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    z-index: 900;
+    animation: fadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+/* ===== MOBILE MENU TOGGLE BUTTON ===== */
+.mobile-menu-toggle {
+    display: none;
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #007bff;
+    border: none;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    z-index: 500;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: white;
+    padding: 0;
+}
+
+.mobile-menu-toggle:hover {
+    background: #0056b3;
+    box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+.mobile-menu-toggle:active {
+    transform: scale(0.95);
+}
+
+.mobile-menu-toggle svg {
+    width: 24px;
+    height: 24px;
+    color: white;
+}
+
+/* ===== RESPONSIVE MEDIA QUERIES ===== */
+
+/* Tablet: 769px - 1024px */
+@media (max-width: 1024px) {
+    .main-content {
+        padding: 24px;
+    }
+
+    .main-content.sidebar-open {
+        margin-left: 80px;
+        filter: blur(4px);
+        pointer-events: none;
+    }
+
+    .sidebar-backdrop {
+        display: block;
+    }
+}
+
+/* Mobile: Below 768px - Overlay sidebar with backdrop */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        padding: 20px 16px;
+    }
+
+    /* Sidebar overlays instead of pushing content */
+    .main-content.sidebar-open {
+        margin-left: 0;
+    }
     
+
+    /* Show mobile menu toggle button */
+    .mobile-menu-toggle {
+        display: flex;
+    }
+}
+
+/* Small Mobile: Below 480px */
+@media (max-width: 480px) {
+    .main-content {
+        padding: 16px 12px;
+    }
+
+    .main-content.sidebar-open {
+        filter: blur(3px);
+    }
+
+    .mobile-menu-toggle {
+        bottom: 16px;
+        left: 16px;
+        width: 50px;
+        height: 50px;
+    }
+
+    .mobile-menu-toggle svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .sidebar-backdrop {
+        background: rgba(0, 0, 0, 0.45);
+    }
 }

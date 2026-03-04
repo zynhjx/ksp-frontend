@@ -1,0 +1,63 @@
+.barangays-page {
+    padding: 2rem;
+    min-height: 100vh;
+    background: var(--bg-color, #f5f7fa);
+    box-sizing: border-box;
+}
+
+.barangay-list h1 {
+    margin-bottom: 1rem;
+    color: var(--text-primary, #333);
+}
+
+.cards {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.barangay-card {
+    background: #fff;
+    padding: 1rem 1.5rem;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.1s ease;
+}
+
+.barangay-card:hover {
+    transform: translateY(-2px);
+}
+
+.barangay-details {
+    max-width: 800px;
+}
+
+.back-btn {
+    margin-bottom: 1rem;
+    padding: 0.4rem 0.8rem;
+    border: none;
+    background: var(--accent-color, #007bff);
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.youth-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.youth-table th,
+.youth-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.youth-table th {
+    background: var(--table-header-bg, #fafafa);
+    font-weight: 600;
+}
