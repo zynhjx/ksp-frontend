@@ -43,13 +43,11 @@ export const AuthProvider = ({ children }) => {
         throw new Error("Logout failed");
       }
       
+      setUser(null)
       toast.success("Successfully logged out!");
 
     } catch (err) {
-      console.error(err);
-      toast.warn("Could not notify server, but logging out locally.");
-    } finally {
-      setUser(null); // force local logout
+      toast.error(err.error)      
     }
   };
 

@@ -16,6 +16,7 @@ import AdminSkManagement from './components/AdminSkManagement'
 import AdminBarangays from './components/AdminBarangays'
 import AdminReports from './components/AdminReports'
 import AdminSettings from './components/AdminSettings'
+import BarangayManagement from './components/BarangayManagement'
 
 function App() {
   return (
@@ -25,20 +26,27 @@ function App() {
         <Route path='/' element={<LandingPage />} />
         <Route path='/auth/register' element={<PublicRoute><RegisterPage /></PublicRoute>} />
         <Route path='/auth/login' element={<PublicRoute><LoginPage /></PublicRoute>}/>
-        <Route path='/youth/dashboard' element={<PrivateRoute allowedRoles={["Youth"]}><YouthDashboard /></PrivateRoute>} />
-        {/* <Route path='/dashboard/sk' element={<PrivateRoute><SkDashboard /></PrivateRoute>} /> */}
+        <Route path='/youth' element={<PrivateRoute allowedRoles={["Youth"]}>
+            <SidebarProvider >
+              <AppLayout role={"Youth"}/>
+            </SidebarProvider>
+          </PrivateRoute>}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<YouthDashboard />} />
+        </Route>
+        
         
         <Route path='/admin' element={<PrivateRoute allowedRoles={["Admin"]}>
-          <SidebarProvider >
-            <AppLayout />
-          </SidebarProvider>
-        </PrivateRoute>}>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="sk-management" element={<AdminSkManagement />} />
-          <Route path="barangays" element={<AdminBarangays />} />
-          <Route path="reports" element={<AdminReports />} />
-          <Route path="settings" element={<AdminSettings />} />
+            <SidebarProvider >
+              <AppLayout role={"Admin"}/>
+            </SidebarProvider>
+          </PrivateRoute>}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="sk-management" element={<AdminSkManagement />} />
+              <Route path="barangays" element={<BarangayManagement />} />
+              <Route path="reports" element={<AdminReports />} />
+              <Route path="settings" element={<AdminSettings />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -7,7 +7,7 @@
     left: 0;
     bottom: 0;
     width: 260px;
-    padding: 16px 32px 16px 16px;
+    padding: 16px 32px 32px 16px;
     background-color: var(--theme-blue);
     transition: 
         width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
@@ -23,7 +23,7 @@
 
 .sidebar.shrinked {
     width: 46px;
-    padding: 16px;
+    padding: 16px 16px 32px 16px;
 }
 
 /* =========================
@@ -117,10 +117,9 @@
 
 .sidebar .nav-wrapper.active {
     background: #0a6dc4ce;
-    
 }
 
-.sidebar.extended .nav-wrapper.active {
+.sidebar.extended nav .nav-wrapper.active {
     transform: translateX(10px);
 }
 
@@ -158,6 +157,13 @@
 
 .sidebar.shrinked .nav-wrapper {
     justify-content: flex-start;
+}
+
+.lower-nav {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 /* =========================
