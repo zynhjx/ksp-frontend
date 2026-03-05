@@ -71,7 +71,7 @@ function AdminReports() {
                 <div className={styles.chartsGrid}>
                     <div className={styles.chartCard}>
                         <h3 className={styles.chartTitle}>Age Distribution</h3>
-                        <BarChart width={400} height={300} data={ageData}>
+                        <BarChart width={380} height={300} data={ageData}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="age" />
                             <YAxis />
@@ -81,7 +81,7 @@ function AdminReports() {
                     </div>
                     <div className={styles.chartCard}>
                         <h3 className={styles.chartTitle}>Education Level Distribution</h3>
-                        <PieChart width={400} height={300}>
+                        <PieChart width={380} height={300}>
                             <Pie
                                 data={educationData}
                                 cx="50%"
@@ -101,7 +101,7 @@ function AdminReports() {
                     </div>
                     <div className={styles.chartCard}>
                         <h3 className={styles.chartTitle}>Employment Status</h3>
-                        <PieChart width={400} height={300}>
+                        <PieChart width={380} height={300}>
                             <Pie
                                 data={employmentData}
                                 cx="50%"
@@ -126,7 +126,7 @@ function AdminReports() {
                 <div className={styles.comparisonContainer}>
                     <div className={styles.chartCard}>
                         <h3 className={styles.chartTitle}>Youth Count per Barangay</h3>
-                        <BarChart width={400} height={300} data={youthCountData}>
+                        <BarChart width={380} height={300} data={youthCountData}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="barangay" />
                             <YAxis />
@@ -136,7 +136,7 @@ function AdminReports() {
                     </div>
                     <div className={styles.chartCard}>
                         <h3 className={styles.chartTitle}>Active Youth per Barangay</h3>
-                        <BarChart width={400} height={300} data={activeYouthData}>
+                        <BarChart width={380} height={300} data={activeYouthData}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="barangay" />
                             <YAxis />

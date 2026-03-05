@@ -268,28 +268,6 @@
         font-size: 1.75rem;
     }
 
-    .searchFilterSection {
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .searchBar {
-        flex: 1 1 100%;
-        min-width: unset;
-    }
-
-    .filters {
-        gap: 0.75rem;
-        flex: 1 1 100%;
-    }
-
-    .filters select {
-        font-size: 0.95rem;
-        padding: 0.6rem 0.85rem;
-        flex: 1 1 calc(50% - 0.375rem);
-        min-width: 120px;
-    }
-
     .barangayTable th,
     .barangayTable td {
         padding: 0.75rem 0.85rem;
@@ -316,36 +294,6 @@
 
     .addBtn {
         width: 100%;
-    }
-
-    .searchFilterSection {
-        flex-direction: column;
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .searchBar {
-        flex: 1 1 100%;
-        min-width: unset;
-    }
-
-    .searchBar input {
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
-    }
-
-    .filters {
-        flex-direction: column;
-        flex: 1 1 100%;
-    }
-
-    .filters select {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
-        flex: unset;
-        min-width: unset;
-        min-height: 44px;
     }
 
     .barangayTable th,
