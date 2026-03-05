@@ -1,0 +1,90 @@
+.reportsContainer {
+  padding: 20px;
+  maxWidth: 1200px;
+  margin: 0 auto;
+}
+
+.pageHeader {
+  marginBottom: 30px;
+  textAlign: center;
+}
+
+.pageHeader h1 {
+  fontSize: 2.5rem;
+  marginBottom: 10px;
+  color: #333;
+}
+
+.pageHeader p {
+  fontSize: 1.1rem;
+  color: #666;
+}
+
+.sectionCard {
+  backgroundColor: #fff;
+  borderRadius: 8px;
+  boxShadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  marginBottom: 30px;
+}
+
+.sectionTitle {
+  fontSize: 1.8rem;
+  marginBottom: 20px;
+  color: #333;
+  borderBottom: 2px solid #f0f0f0;
+  paddingBottom: 10px;
+}
+
+.tableWrapper {
+  overflowX: auto;
+}
+
+.reportTable {
+  width: 100%;
+  borderCollapse: collapse;
+  marginTop: 10px;
+}
+
+.tableHeader th {
+  backgroundColor: #f8f9fa;
+  padding: 12px;
+  textAlign: left;
+  fontWeight: bold;
+  borderBottom: 2px solid #dee2e6;
+}
+
+.tableRow {
+  transition: backgroundColor 0.2s;
+}
+
+.tableRow:hover {
+  backgroundColor: #f1f3f4;
+}
+
+.tableRow td {
+  padding: 12px;
+  borderBottom: 1px solid #dee2e6;
+}
+
+@media (maxWidth: 768px) {
+  .reportsContainer {
+    padding: 10px;
+  }
+
+  .sectionCard {
+    padding: 15px;
+  }
+
+  .sectionTitle {
+    fontSize: 1.5rem;
+  }
+
+  .pageHeader h1 {
+    fontSize: 2rem;
+  }
+
+  .pageHeader p {
+    fontSize: 1rem;
+  }
+}

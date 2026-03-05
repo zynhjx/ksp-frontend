@@ -65,7 +65,7 @@
 }
 
 .searchBar {
-    flex: 1 1 280px;
+    flex: 4;
     min-width: 200px;
 }
 
@@ -89,7 +89,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
-    flex: 1 1 250px;
+    flex: 1;
 }
 
 .filters select {

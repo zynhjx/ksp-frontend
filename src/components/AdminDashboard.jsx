@@ -1,4 +1,4 @@
-import './AdminDashboard.css';
+import styles from './AdminDashboard.module.css';
 import BarangayOverviewTable from './BarangayOverviewTable';
 
 function AdminDashboard() {
@@ -13,11 +13,11 @@ function AdminDashboard() {
     ];
 
     return (
-        <div className="admin-dashboard-page">
-            <h1 className="dashboard-title">Admin Dashboard</h1>
-            <div className="stats-grid">
+        <div className={styles.adminDashboardPage}>
+            <h1 className={styles.dashboardTitle}>Admin Dashboard</h1>
+            <div className={styles.statsGrid}>
                 {stats.map((s) => (
-                    <div key={s.label} className="stat-card">
+                    <div key={s.label} className={styles.statCard}>
                         <h2>{s.value}</h2>
                         <p>{s.label}</p>
                     </div>

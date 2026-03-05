@@ -127,12 +127,12 @@ function AdminSkManagement() {
         </div>
       </div>
 
-      <div className={styles['bulk-actions']}>
+      {/* <div className={styles['bulk-actions']}>
         <button className={styles['export-btn']}>Export CSV</button>
         <button className={styles['export-btn']}>Export PDF</button>
         <button className={styles['activate-btn']}>Bulk Activate</button>
         <button className={styles['deactivate-btn']}>Bulk Deactivate</button>
-      </div>
+      </div> */}
 
       <Table
         data={filtered}

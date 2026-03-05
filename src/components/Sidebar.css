@@ -234,10 +234,7 @@
         box-shadow: 2px 0 16px rgba(0, 0, 0, 0.2);
     }
 
-    /* When sidebar is open on mobile, show it and hide menu bar toggle */
-    .sidebar.extended .menu-bar {
-        display: flex;
-    }
+    
 }
 
 /* Small Mobile: Below 480px */

@@ -1,25 +1,24 @@
-.admin-dashboard-page {
-    padding: 0 2rem 2rem;
+.adminDashboardPage {
     width: 100%;
     min-height: 100vh;
     box-sizing: border-box;
     background: var(--bg-color, #f5f7fa);
 }
 
-.dashboard-title {
-    margin-bottom: 1.5rem;
+.dashboardTitle {
+    margin: 0 0 32px;
     font-size: 2rem;
     text-align: center;
     color: var(--text-primary, #333);
 }
 
-.stats-grid {
+.statsGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
 }
 
-.stat-card {
+.statCard {
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -27,13 +26,13 @@
     text-align: center;
 }
 
-.stat-card h2 {
+.statCard h2 {
     font-size: 2rem;
     margin: 0;
     color: var(--accent-color, #007bff);
 }
 
-.stat-card p {
+.statCard p {
     margin: 0.5rem 0 0;
     color: #555;
 }
