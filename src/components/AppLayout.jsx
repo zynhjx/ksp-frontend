@@ -31,7 +31,7 @@ function AppLayout() {
             )}
 
             <main className={`main-content ${sidebarOpen ? "sidebar-open" : "" }`}>
-                <Outlet />
+                <Outlet />       
             </main>
 
             {/* Mobile Menu Toggle Button */}
