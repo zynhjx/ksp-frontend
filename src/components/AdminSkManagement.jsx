@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './AdminSkManagement.module.css';
 import AddSkModal from './AddSkModal';
 import Table from './Table';
+import { toast } from 'react-toastify';
+import { apiFetch } from '../api';
+import PageSkeleton from './PageSkeleton';
+import PageError from './PageError';
 
 function AdminSkManagement() {
   // placeholder list; replace with API data later
@@ -10,34 +14,84 @@ function AdminSkManagement() {
   const [filterPosition, setFilterPosition] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [barangays, setBarangays] = useState([]);
 
-  const [skList, setSkList] = useState([
-    {
-      id: 1,
-      name: 'Juan Dela Cruz',
-      position: 'Chairperson',
-      barangay: 'Napsan',
-      email: 'juan@example.com',
-      status: 'Active'
-    },
-    {
-      id: 2,
-      name: 'Maria Santos',
-      position: 'Secretary',
-      barangay: 'Simpokan',
-      email: 'maria@example.com',
-      status: 'Inactive'
-    },
-    {
-      id: 3,
-      name: 'Pedro Pascual',
-      position: 'Treasurer',
-      barangay: 'Barangay Bayan',
-      email: 'pedro@example.com',
-      status: 'Active'
+
+  // {
+  //   id: 1,
+  //   name: 'Juan Dela Cruz',
+  //   position: 'Chairperson',
+  //   barangay: 'Napsan',
+  //   email: 'juan@example.com',
+  //   status: 'Active'
+  // },
+  // {
+  //   id: 2,
+  //   name: 'Maria Santos',
+  //   position: 'Secretary',
+  //   barangay: 'Simpokan',
+  //   email: 'maria@example.com',
+  //   status: 'Inactive'
+  // },
+  // {
+  //   id: 3,
+  //   name: 'Pedro Pascual',
+  //   position: 'Treasurer',
+  //   barangay: 'Barangay Bayan',
+  //   email: 'pedro@example.com',
+  //   status: 'Active'
+  // }
+
+
+  
+
+  const [skList, setSkList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isError, setIsError] = useState(false)
+
+
+  async function fetchData() {
+      setLoading(true);
+      setIsError(false)
+      try {
+          const res = await apiFetch('http://localhost:5000/api/admin/sk-officials');
+          const data = await res.json();
+          setSkList(data);
+      } catch (err) {
+          console.error(err.message);
+          toast.error(err.message)
+          setIsError(true)
+          
+      } finally {
+          setLoading(false);
+      }
+  }
+
+  async function fetchBarangays() {
+    try {
+      const res = await apiFetch("http://localhost:5000/api/admin/barangays");
+
+      if (!res.ok) {
+        const result = await res.json();
+        throw new Error(result.message);
+      }
+
+      const data = await res.json();
+      setBarangays(data.barangays); // or data depending on your API
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to load barangays");
     }
-    // ... more mock data as needed
-  ]);
+  }
+
+  useEffect(() => {
+      fetchData();
+      fetchBarangays();
+  }, []);
+
+    // Show skeleton while loading
+  if (loading) return <PageSkeleton />;
+  if (isError) return <PageError onRetry={fetchData}/>
 
   const filtered = skList.filter((sk) => {
     const matchesSearch =
@@ -63,11 +117,37 @@ function AdminSkManagement() {
     console.log('row clicked', id);
   };
 
-  const handleModalSave = (newSk) => {
-    const id = Date.now();
-    setSkList((prev) => [...prev, { id, ...newSk, status: 'Active' }]);
-    setIsModalOpen(false);
+  const handleModalSave = async (newSk) => {
+    try {
+      const res = await apiFetch("http://localhost:5000/api/admin/sk-management", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newSk)
+      });
+
+      if (!res.ok) {
+        const result = await res.json()
+        throw new Error(result.message);
+        
+      }
+
+      const created = await res.json();
+
+      // update UI immediately
+      setSkList((prev) => [...prev, created]);
+
+      toast.success("SK official added successfully");
+      setIsModalOpen(false);
+
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message);
+    }
   };
+
+  
 
   const handleModalClose = () => {
     setIsModalOpen(false);
@@ -102,9 +182,11 @@ function AdminSkManagement() {
             onChange={(e) => setFilterBarangay(e.target.value)}
           >
             <option value="">All Barangays</option>
-            <option value="Napsan">Napsan</option>
-            <option value="Simpokan">Simpokan</option>
-            <option value="Barangay Bayan">Barangay Bayan</option>
+            {barangays.map((b) => (
+              <option key={b.id} value={b.name}>
+                {b.name}
+              </option>
+            ))}
           </select>
           <select
             value={filterPosition}
@@ -122,6 +204,7 @@ function AdminSkManagement() {
           >
             <option value="">All Status</option>
             <option value="Active">Active</option>
+            <option value="Pending">Pending</option>
             <option value="Inactive">Inactive</option>
           </select>
         </div>

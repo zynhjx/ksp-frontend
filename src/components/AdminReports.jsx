@@ -32,6 +32,13 @@ function AdminReports() {
         { name: 'Self-employed', value: 14 }
     ];
 
+    const activeYouthData = [
+        { barangay: 'Napsan', count: 80 },
+        { barangay: 'Simpokan', count: 59 },
+        { barangay: 'Bagong Bayan', count: 42 },
+        { barangay: 'San Rafael', count: 17 }
+    ];
+
     const youthCountData = [
         { barangay: 'Napsan', count: 87 },
         { barangay: 'Simpokan', count: 63 },
@@ -39,12 +46,7 @@ function AdminReports() {
         { barangay: 'San Rafael', count: 15 }
     ];
 
-    const activeYouthData = [
-        { barangay: 'Napsan', count: 80 },
-        { barangay: 'Simpokan', count: 59 },
-        { barangay: 'Bagong Bayan', count: 42 },
-        { barangay: 'San Rafael', count: 17 }
-    ];
+    
 
     const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 

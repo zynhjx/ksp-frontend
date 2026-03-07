@@ -17,11 +17,13 @@ import AdminBarangays from './components/AdminBarangays'
 import AdminReports from './components/AdminReports'
 import AdminSettings from './components/AdminSettings'
 import BarangayManagement from './components/BarangayManagement'
+import PageSkeleton from './components/PageSkeleton'
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path='/skeleton' element={<PageSkeleton />} />
         <Route path='/forbidden' element={<AccessDenied />} />
         <Route path='/' element={<LandingPage />} />
         <Route path='/auth/register' element={<PublicRoute><RegisterPage /></PublicRoute>} />
@@ -45,7 +47,7 @@ function App() {
               <Route path="dashboard" element={<AdminDashboard />} />
               <Route path="sk-management" element={<AdminSkManagement />} />
               <Route path="barangays" element={<BarangayManagement />} />
-              <Route path="reports" element={<AdminReports />} />
+              {/* <Route path="reports" element={<AdminReports />} /> */}
               <Route path="settings" element={<AdminSettings />} />
         </Route>
       </Routes>

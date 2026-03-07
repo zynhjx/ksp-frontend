@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './AddEditBarangayModal.css';
 
-function AddEditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficials }) {
+function AddEditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficials = [] }) {
   const [name, setName] = useState('');
   const [status, setStatus] = useState('Active');
   const [selectedOfficials, setSelectedOfficials] = useState([]);
+  const [isSaving, setIsSaving] = useState('');
 
   useEffect(() => {
     if (barangay) {
@@ -29,13 +30,14 @@ function AddEditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficial
     };
   }, [isOpen]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave({
-      name,
-      status,
-      skOfficials: selectedOfficials
-    });
+    setIsSaving(true);
+    try {
+      await onSave({ name, status, skOfficials: selectedOfficials });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleOfficialToggle = (id) => {
@@ -76,6 +78,13 @@ function AddEditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficial
             </select>
           </div>
 
+
+{/* // const skOfficialsList = [
+//   { id: 1, name: 'Juan Dela Cruz', position: 'Chairperson', barangay: 'Napsan', status: 'Active' },
+//   { id: 2, name: 'Maria Santos', position: 'Secretary', barangay: 'Napsan', status: 'Active' },
+//   { id: 3, name: 'Pedro Pascual', position: 'Treasurer', barangay: 'Simpokan', status: 'Active' },
+//   { id: 4, name: 'Ana García', position: 'Auditor', barangay: 'Bagong Bayan', status: 'Inactive' }
+// ]; */}
           <div className="form-group">
             <label>SK Officials (Optional)</label>
             <div className="officials-list">
@@ -103,8 +112,8 @@ function AddEditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficial
             <button type="button" onClick={onClose} className="btn-cancel">
               Cancel
             </button>
-            <button type="submit" className="btn-save">
-              {barangay ? 'Update' : 'Save'}
+            <button type="submit" className="btn-save" disabled={isSaving}>
+              {isSaving ? 'Saving...' : barangay ? 'Update' : 'Save'}
             </button>
           </div>
         </form>

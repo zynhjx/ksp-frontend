@@ -20,7 +20,6 @@ export default function Table({ data, handleRowClick, hasActions, skTable, handl
               : 
               <tr>
                   <th>Barangay Name</th>
-                  <th className={style.center}>Total Youth</th>
                   <th className={style.center}>Active Youth</th>
                   <th className={style.center}>SK Officials</th>
                   <th className={style.center}>Status</th>
@@ -46,7 +45,6 @@ export default function Table({ data, handleRowClick, hasActions, skTable, handl
                   :
                   <>
                       <td>{row.name}</td>
-                      <td className={style.center}>{row.total_youth}</td>
                       <td className={style.center}>{row.active_youth}</td>
                       <td className={style.center}>
                           <button
@@ -54,7 +52,7 @@ export default function Table({ data, handleRowClick, hasActions, skTable, handl
                               onClick={() => handleViewSkOfficials(row.id)}
                               title="Click to view SK officials"
                           >
-                              {row.skOfficials.length}
+                              {(row.skOfficials || []).length}
                           </button>
                       </td>
                       <td className={`${style.status} ${style.center}`}>
@@ -130,7 +128,7 @@ export default function Table({ data, handleRowClick, hasActions, skTable, handl
                             onClick={() => handleViewSkOfficials(row.id)}
                             title="Click to view SK officials"
                           >
-                            {row.skOfficials.length}
+                            {(row.skOfficials || []).length}
                           </button>
                         </p>
                       </div>

@@ -1,11 +1,14 @@
 .barangay-overview-container {
-    width: 100%;
-    margin-top: 2rem;
+    grid-column: span 6;
     background: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     padding: 2rem;
     box-sizing: border-box;
+    max-height: 395px;
+
+    display: flex;
+    flex-direction: column;
 }
 
 .overview-title {
@@ -18,6 +21,8 @@
 .table-wrapper {
     width: 100%;
     overflow-x: auto;
+    overflow-y: auto;
+    min-height: 0;
 }
 
 .barangay-table {
@@ -37,6 +42,9 @@
     font-weight: 600;
     color: #495057;
     white-space: nowrap;
+    position: sticky;
+    background: #f8f9fa;
+    top: 0;
 }
 
 .barangay-table th#barangay {

@@ -36,6 +36,12 @@
     gap: 1rem;
 }
 
+.name-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
 .form-group {
     display: flex;
     flex-direction: column;
@@ -112,6 +118,10 @@
         font-size: 1.1rem;
     }
 
+    .name-row {
+        grid-template-columns: 1fr;
+    }
+    
     .form-group input,
     .form-group select {
         font-size: 16px; /* Prevents zoom on mobile */
