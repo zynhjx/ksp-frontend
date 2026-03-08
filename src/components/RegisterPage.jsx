@@ -10,6 +10,7 @@ import { AuthContext } from "../contexts/AuthContext";
 function RegisterPage() {
     const navigate = useNavigate();
     const { login } = useContext(AuthContext);
+    const apiUrl = import.meta.env.VITE_API_URL;
     const [showPassword, setShowPassword] = useState(false);
     const [showConfPassword, setShowConfPassword] = useState(false);
     const EyeClosed = (
@@ -61,7 +62,7 @@ function RegisterPage() {
             return;
         }
         try {
-            const response = await fetch("http://localhost:5000/api/register", {
+            const response = await fetch(`${apiUrl}/api/register`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

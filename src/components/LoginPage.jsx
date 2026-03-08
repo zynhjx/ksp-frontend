@@ -7,6 +7,7 @@ import { AuthContext } from "../contexts/AuthContext";
 
 function LoginPage() {
     const {login} = useContext(AuthContext)
+    const apiUrl = import.meta.env.VITE_API_URL;
     const [showPassword, setShowPassword] = useState(false);
     const EyeClosed = (
         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
@@ -40,7 +41,7 @@ function LoginPage() {
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent page reload
         try {
-            const response = await fetch("http://localhost:5000/api/login", {
+            const response = await fetch(`${apiUrl}/api/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -71,8 +72,10 @@ function LoginPage() {
                 toast.error(data.error || data.message || "Login failed");
             }
         } catch (err) {
+            
             console.error(err);
             toast.error("Server error. Please try again.");
+            toast.error(apiUrl)
         }
     };
     

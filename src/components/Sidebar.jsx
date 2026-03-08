@@ -126,7 +126,13 @@ function Sidebar({ activePath }) {
             <nav className='main-nav'>
                 {userNavs.map((nav) => {
                   return (
-                  <Link key={nav.path} to={nav.path} className={`nav-wrapper ${activePath === nav.path ? "active" : ""}`}>
+                  <Link
+                    key={nav.path}
+                    to={nav.path}
+                    className={`nav-wrapper ${activePath === nav.path ? "active" : ""}`}
+                    data-label={nav.title}
+                    aria-label={nav.title}
+                  >
                     <div className="sidebar-item">
                       {nav.svg}
                     </div>
@@ -137,7 +143,12 @@ function Sidebar({ activePath }) {
             </nav>
 
             <nav className="lower-nav">
-                <Link to="/admin/settings" className={`nav-wrapper ${activePath === "/admin/settings" ? "active" : ""}`}>
+                <Link
+                  to="/admin/settings"
+                  className={`nav-wrapper ${activePath === "/admin/settings" ? "active" : ""}`}
+                  data-label="Settings"
+                  aria-label="Settings"
+                >
                   <div className='sidebar-item'>
                       <svg viewBox="0 0 24 24" width="55" height="55" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -150,7 +161,7 @@ function Sidebar({ activePath }) {
                   </div>
                   <h3>Settings</h3>
                 </Link>
-                <div className="logout-btn" onClick={handleLogout}>
+                <div className="logout-btn" onClick={handleLogout} data-label="Logout" aria-label="Logout" role="button" tabIndex={0}>
                   <div className="icon-container">
                     <svg viewBox="0 0 24 24" width="26" height="26" fill="white" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12.9999 2C10.2385 2 7.99991 4.23858 7.99991 7C7.99991 7.55228 8.44762 8 8.99991 8C9.55219 8 9.99991 7.55228 9.99991 7C9.99991 5.34315 11.3431 4 12.9999 4H16.9999C18.6568 4 19.9999 5.34315 19.9999 7V17C19.9999 18.6569 18.6568 20 16.9999 20H12.9999C11.3431 20 9.99991 18.6569 9.99991 17C9.99991 16.4477 9.55219 16 8.99991 16C8.44762 16 7.99991 16.4477 7.99991 17C7.99991 19.7614 10.2385 22 12.9999 22H16.9999C19.7613 22 21.9999 19.7614 21.9999 17V7C21.9999 4.23858 19.7613 2 16.9999 2H12.9999Z" fill="white"></path>

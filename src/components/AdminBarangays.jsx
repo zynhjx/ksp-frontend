@@ -2,30 +2,30 @@ import React, { useState } from 'react';
 import './AdminBarangays.css';
 
 function AdminBarangays() {
-  const barangays = [
-    {
-      id: 1,
-      name: 'Barangay Simpokan',
-      youths: [
-        { id: 1, name: 'Ana Cruz', age: 18, status: 'Registered' },
-        { id: 2, name: 'Luis Reyes', age: 17, status: 'Pending' }
-      ]
-    },
-    {
-      id: 2,
-      name: 'Barangay Napsan',
-      youths: [
-        { id: 3, name: 'Mia Santos', age: 16, status: 'Registered' }
-      ]
-    },
-    {
-      id: 3,
-      name: 'Barangay Bagong Bayan',
-      youths: [
-        { id: 4, name: 'Rico Delos', age: 19, status: 'Registered' }
-      ]
-    }
-  ];
+  // const barangays = [
+  //   {
+  //     id: 1,
+  //     name: 'Barangay Simpokan',
+  //     youths: [
+  //       { id: 1, name: 'Ana Cruz', age: 18, status: 'Registered' },
+  //       { id: 2, name: 'Luis Reyes', age: 17, status: 'Pending' }
+  //     ]
+  //   },
+  //   {
+  //     id: 2,
+  //     name: 'Barangay Napsan',
+  //     youths: [
+  //       { id: 3, name: 'Mia Santos', age: 16, status: 'Registered' }
+  //     ]
+  //   },
+  //   {
+  //     id: 3,
+  //     name: 'Barangay Bagong Bayan',
+  //     youths: [
+  //       { id: 4, name: 'Rico Delos', age: 19, status: 'Registered' }
+  //     ]
+  //   }
+  // ];
 
   const [selectedBarangay, setSelectedBarangay] = useState(null);
 

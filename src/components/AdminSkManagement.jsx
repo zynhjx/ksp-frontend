@@ -1,20 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styles from './AdminSkManagement.module.css';
 import AddSkModal from './AddSkModal';
+import EditSkModal from './EditSkModal';
 import Table from './Table';
 import { toast } from 'react-toastify';
 import { apiFetch } from '../api';
 import PageSkeleton from './PageSkeleton';
 import PageError from './PageError';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const parseJsonSafe = async (response) => {
+  try {
+    return await response.json();
+  } catch {
+    return null;
+  }
+};
 
 function AdminSkManagement() {
+  const MySwal = withReactContent(Swal);
   // placeholder list; replace with API data later
   const [search, setSearch] = useState('');
   const [filterBarangay, setFilterBarangay] = useState('');
   const [filterPosition, setFilterPosition] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedSk, setSelectedSk] = useState(null);
   const [barangays, setBarangays] = useState([]);
+  const apiUrl = import.meta.env.VITE_API_URL;
 
 
   // {
@@ -49,27 +64,66 @@ function AdminSkManagement() {
   const [loading, setLoading] = useState(true);
   const [isError, setIsError] = useState(false)
 
+  const deleteSkOfficial = async (officialId) => {
+    try {
+      const res = await apiFetch(`${apiUrl}/api/admin/sk-officials/${officialId}`, {
+        method: 'DELETE',
+      });
 
-  async function fetchData() {
+      if (!res.ok) {
+        const result = await parseJsonSafe(res);
+        throw new Error(result?.message || 'Failed to delete SK official');
+      }
+
+      // Return true if deletion succeeded
+      return true;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  };
+
+  const updateSkOfficial = async (officialId, officialPayload) => {
+    try {
+      const res = await apiFetch(`${apiUrl}/api/admin/sk-management/${officialId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(officialPayload)
+      });
+
+      if (!res.ok) {
+        const result = await parseJsonSafe(res);
+        throw new Error(result?.message || 'Failed to update SK official');
+      }
+
+      const updated = await parseJsonSafe(res);
+      return updated;
+    } catch (err) {
+      console.error(err);
+      throw err;
+    }
+  };
+
+
+  const fetchData = useCallback(async () => {
       setLoading(true);
       setIsError(false)
       try {
-          const res = await apiFetch('http://localhost:5000/api/admin/sk-officials');
+          const res = await apiFetch(`${apiUrl}/api/admin/sk-officials`);
           const data = await res.json();
           setSkList(data);
       } catch (err) {
           console.error(err.message);
-          toast.error(err.message)
           setIsError(true)
           
       } finally {
           setLoading(false);
       }
-  }
+  }, [apiUrl]);
 
-  async function fetchBarangays() {
+  const fetchBarangays = useCallback(async () => {
     try {
-      const res = await apiFetch("http://localhost:5000/api/admin/barangays");
+      const res = await apiFetch(`${apiUrl}/api/admin/barangays`);
 
       if (!res.ok) {
         const result = await res.json();
@@ -82,21 +136,24 @@ function AdminSkManagement() {
       console.error(err);
       toast.error("Failed to load barangays");
     }
-  }
+  }, [apiUrl]);
 
   useEffect(() => {
       fetchData();
       fetchBarangays();
-  }, []);
+  }, [fetchData, fetchBarangays]);
 
     // Show skeleton while loading
   if (loading) return <PageSkeleton />;
   if (isError) return <PageError onRetry={fetchData}/>
 
   const filtered = skList.filter((sk) => {
+    const name = sk?.name || '';
+    const email = sk?.email || '';
+
     const matchesSearch =
-      sk.name.toLowerCase().includes(search.toLowerCase()) ||
-      sk.email.toLowerCase().includes(search.toLowerCase());
+      name.toLowerCase().includes(search.toLowerCase()) ||
+      email.toLowerCase().includes(search.toLowerCase());
     const matchesBarangay =
       !filterBarangay || sk.barangay === filterBarangay;
     const matchesPosition =
@@ -117,29 +174,53 @@ function AdminSkManagement() {
     console.log('row clicked', id);
   };
 
-  const handleModalSave = async (newSk) => {
-    try {
-      const res = await apiFetch("http://localhost:5000/api/admin/sk-management", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(newSk)
-      });
+  const handleEditClick = (official) => {
+    setSelectedSk(official);
+    setIsEditModalOpen(true);
+  };
 
-      if (!res.ok) {
-        const result = await res.json()
-        throw new Error(result.message);
-        
+  const handleDeleteClick = async (official) => {
+    const result = await MySwal.fire({
+      title: 'Are you sure?',
+      text: 'This SK official will be deleted.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete',
+      cancelButtonText: 'Cancel'
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    try {
+      await deleteSkOfficial(official.id);
+      setSkList((prev) => prev.filter((item) => item.id !== official.id));
+      toast.success('SK official deleted successfully');
+    } catch (err) {
+      console.error(err);
+      const message = err?.message || 'Failed to delete SK official';
+      toast.error(message);
+      MySwal.fire({
+        title: 'Delete failed',
+        text: message,
+        icon: 'error'
+      });
+    }
+  };
+
+  const handleEditModalSave = async (updatedFields) => {
+    try {
+      if (!selectedSk) {
+        throw new Error('No SK official selected for editing');
       }
 
-      const created = await res.json();
+      await updateSkOfficial(selectedSk.id, updatedFields);
+      await fetchData();
+      toast.success('SK official updated successfully');
 
-      // update UI immediately
-      setSkList((prev) => [...prev, created]);
-
-      toast.success("SK official added successfully");
-      setIsModalOpen(false);
+      setIsEditModalOpen(false);
+      setSelectedSk(null);
 
     } catch (err) {
       console.error(err);
@@ -147,10 +228,39 @@ function AdminSkManagement() {
     }
   };
 
-  
+  const handleAddModalSave = async (newSk) => {
+    try {
+      const res = await apiFetch(`${apiUrl}/api/admin/sk-management`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newSk)
+      });
 
-  const handleModalClose = () => {
-    setIsModalOpen(false);
+      if (!res.ok) {
+        const result = await res.json();
+        throw new Error(result.message);
+      }
+
+      const created = await res.json();
+
+      setSkList((prev) => [...prev, created]);
+      toast.success('SK official added successfully');
+      setIsAddModalOpen(false);
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message);
+    }
+  };
+
+  const handleAddModalClose = () => {
+    setIsAddModalOpen(false);
+  };
+
+  const handleEditModalClose = () => {
+    setIsEditModalOpen(false);
+    setSelectedSk(null);
   };
 
   return (
@@ -162,7 +272,12 @@ function AdminSkManagement() {
             Manage barangay SK officials and their details
           </p>
         </div>
-        <button className={styles['add-btn']} onClick={() => setIsModalOpen(true)}>
+        <button
+          className={styles['add-btn']}
+          onClick={() => {
+            setIsAddModalOpen(true);
+          }}
+        >
           + Add SK Official
         </button>
       </div>
@@ -222,12 +337,22 @@ function AdminSkManagement() {
         skTable={true}
         handleRowClick={handleRowClick}
         hasActions={true}
+        onEdit={handleEditClick}
+        onDelete={handleDeleteClick}
+        deleteLabel="Delete"
       />
 
       <AddSkModal
-        isOpen={isModalOpen}
-        onClose={handleModalClose}
-        onSave={handleModalSave}
+        isOpen={isAddModalOpen}
+        onClose={handleAddModalClose}
+        onSave={handleAddModalSave}
+      />
+
+      <EditSkModal
+        isOpen={isEditModalOpen}
+        onClose={handleEditModalClose}
+        onSave={handleEditModalSave}
+        initialData={selectedSk}
       />
     </div>
   );

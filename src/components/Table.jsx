@@ -1,7 +1,7 @@
 
 import style from './Table.module.css'
 
-export default function Table({ data, handleRowClick, hasActions, skTable, handleViewSkOfficials }) {
+export default function Table({ data, handleRowClick, hasActions, skTable, handleViewSkOfficials, onEdit, onDelete, deleteLabel = 'Remove' }) {
 
     return (
         <div className={style.tableWrapper}>
@@ -52,7 +52,7 @@ export default function Table({ data, handleRowClick, hasActions, skTable, handl
                               onClick={() => handleViewSkOfficials(row.id)}
                               title="Click to view SK officials"
                           >
-                              {(row.skOfficials || []).length}
+                              {(row.sk_officials || []).length}
                           </button>
                       </td>
                       <td className={`${style.status} ${style.center}`}>
@@ -65,8 +65,24 @@ export default function Table({ data, handleRowClick, hasActions, skTable, handl
 
                   {hasActions &&
                       <td className={style.actions}>
-                          <button className={style.editBtn}>Edit</button>
-                          <button className={style.deleteBtn}>Remove</button>
+                          <button
+                            className={style.editBtn}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEdit?.(row);
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className={style.deleteBtn}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDelete?.(row);
+                            }}
+                          >
+                            {deleteLabel}
+                          </button>
                       </td>
                   }
                 </tr>
@@ -142,8 +158,24 @@ export default function Table({ data, handleRowClick, hasActions, skTable, handl
                 
                 {hasActions && (
                   <div className={style.cardFooter}>
-                    <button className={style.editBtn}>Edit</button>
-                    <button className={style.deleteBtn}>Remove</button>
+                    <button
+                      className={style.editBtn}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit?.(row);
+                      }}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className={style.deleteBtn}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete?.(row);
+                      }}
+                    >
+                      {deleteLabel}
+                    </button>
                   </div>
                 )}
               </article>

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import './AddSkModal.css';
+import './EditSkModal.css';
 import { apiFetch } from '../api';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-function AddSkModal({ isOpen, onClose, onSave }) {
+function EditSkModal({ isOpen, onClose, onSave, initialData }) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [position, setPosition] = useState('');
@@ -40,37 +40,61 @@ function AddSkModal({ isOpen, onClose, onSave }) {
   }, [isOpen]);
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || !initialData) return;
 
-    setFirstName('');
-    setLastName('');
-    setPosition('');
-    setBarangay('');
-    setEmail('');
+    const [initialFirstName = '', ...restName] = (initialData.name || '').split(' ');
+    setFirstName(initialData.firstName || initialFirstName);
+    setLastName(initialData.lastName || restName.join(' '));
+    setPosition(initialData.position || '');
+    setBarangay(initialData.barangay || '');
+    setEmail(initialData.email || '');
     setPassword('');
     setConfirmPassword('');
-  }, [isOpen]);
+  }, [isOpen, initialData]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
+    if (password && password !== confirmPassword) {
       toast.error('Passwords do not match');
       return;
     }
 
-    const officialPayload = {
+    const [initialFirstName = '', ...restName] = (initialData?.name || '').split(' ');
+    const initialFormValues = {
+      firstName: initialData?.firstName || initialFirstName,
+      lastName: initialData?.lastName || restName.join(' '),
+      position: initialData?.position || '',
+      barangay: initialData?.barangay || '',
+      email: initialData?.email || ''
+    };
+
+    const currentFormValues = {
       firstName,
       lastName,
       position,
       barangay,
-      email,
-      status: 'Active'
+      email
     };
 
-    officialPayload.password = password;
+    const changedFields = Object.entries(currentFormValues).reduce((acc, [key, value]) => {
+      if (value !== initialFormValues[key]) {
+        acc[key] = value;
+      }
 
-    onSave(officialPayload);
+      return acc;
+    }, {});
+
+    if (password) {
+      changedFields.password = password;
+    }
+
+    if (Object.keys(changedFields).length === 0) {
+      toast.info('No changes detected');
+      return;
+    }
+
+    onSave(changedFields);
   };
 
   if (!isOpen) return null;
@@ -78,10 +102,9 @@ function AddSkModal({ isOpen, onClose, onSave }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-        <h2 className="modal-title">Add SK Official</h2>
+        <h2 className="modal-title">Edit SK Official</h2>
 
         <form onSubmit={handleSubmit} className="modal-form">
-
           <div className="name-row">
             <div className="form-group">
               <label>First Name</label>
@@ -146,12 +169,11 @@ function AddSkModal({ isOpen, onClose, onSave }) {
           </div>
 
           <div className="form-group">
-            <label>Password</label>
+            <label>New Password (Optional)</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
             />
           </div>
 
@@ -161,7 +183,7 @@ function AddSkModal({ isOpen, onClose, onSave }) {
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              required
+              required={Boolean(password)}
             />
           </div>
 
@@ -171,14 +193,13 @@ function AddSkModal({ isOpen, onClose, onSave }) {
             </button>
 
             <button type="submit" className="btn-save">
-              Save
+              Update
             </button>
           </div>
-
         </form>
       </div>
     </div>
   );
 }
 
-export default AddSkModal;
+export default EditSkModal;

@@ -15,6 +15,7 @@ function BarangayManagement() {
   const [isViewSkModalOpen, setIsViewSkModalOpen] = useState(false);
   const [selectedBarangay, setSelectedBarangay] = useState(null);
   const [editingBarangay, setEditingBarangay] = useState(null);
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   // Mock SK Officials data
   // const skOfficialsList = [
@@ -59,7 +60,7 @@ function BarangayManagement() {
       setLoading(true);
       setIsError(false)
       try {
-          const res = await apiFetch('http://localhost:5000/api/admin/barangays');
+          const res = await apiFetch(`${apiUrl}/api/admin/barangays`);
           const data = await res.json();
           setBarangays(data.barangays);
           setUnassignedSkOfficials(data.unassignedSkOfficials)
@@ -102,7 +103,7 @@ function BarangayManagement() {
   const handleSaveBarangay = async (barangayData) => {
     
     try {
-      const res = await apiFetch('http://localhost:5000/api/admin/barangays', {
+      const res = await apiFetch(`${apiUrl}/api/admin/barangays`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(barangayData),

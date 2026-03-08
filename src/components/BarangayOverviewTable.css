@@ -1,11 +1,11 @@
 .barangay-overview-container {
     grid-column: span 6;
     background: #fff;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     padding: 2rem;
     box-sizing: border-box;
-    max-height: 395px;
+    max-height: 24.75rem;
 
     display: flex;
     flex-direction: column;
@@ -13,14 +13,14 @@
 
 .overview-title {
     margin: 0 0 1.5rem 0;
-    font-size: 1.5rem;
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
     font-weight: 600;
     color: var(--text-primary, #333);
 }
 
 .table-wrapper {
     width: 100%;
-    overflow-x: auto;
+    overflow-x: hidden;
     overflow-y: auto;
     min-height: 0;
 }
@@ -29,6 +29,7 @@
     width: 100%;
     border-collapse: collapse;
     font-size: 0.95rem;
+    table-layout: fixed;
 }
 
 .barangay-table thead {
@@ -65,6 +66,7 @@
 .barangay-table td {
     padding: 1rem 1.25rem;
     color: #333;
+    word-break: break-word;
 }
 
 .barangay-row.no-officials td {
@@ -87,9 +89,18 @@
 }
 
 /* Responsive design */
+@media (max-width: 1024px) {
+    .barangay-overview-container {
+        grid-column: span 6;
+        padding: 1.5rem;
+    }
+}
+
 @media (max-width: 768px) {
     .barangay-overview-container {
+        grid-column: span 1;
         padding: 1.5rem 1rem;
+        max-height: 22rem;
     }
 
     .overview-title {
@@ -114,6 +125,7 @@
 @media (max-width: 480px) {
     .barangay-overview-container {
         padding: 1rem;
+        max-height: 20rem;
     }
 
     .overview-title {
@@ -131,10 +143,38 @@
     }
 }
 
+@media (max-width: 550px) {
+    .barangay-overview-container {
+        padding: 0.875rem;
+        max-height: 19rem;
+    }
+
+    .overview-title {
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .table-wrapper {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .barangay-table {
+        width: 100%;
+        font-size: 0.8rem;
+    }
+
+    .barangay-table th,
+    .barangay-table td {
+        padding: 0.55rem 0.45rem;
+        white-space: normal;
+    }
+}
+
 /* Ensure horizontal scroll on very small screens */
 @media (max-width: 600px) {
     .table-wrapper {
-        margin: 0 -1rem;
-        padding: 0 1rem;
+        margin: 0;
+        padding: 0;
     }
 }
