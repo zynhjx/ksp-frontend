@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import './AddEditBarangayModal.css';
 
-function AddEditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficials = [] }) {
+function EditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficials = [] }) {
   const [name, setName] = useState('');
   const [status, setStatus] = useState('Active');
   const [selectedOfficials, setSelectedOfficials] = useState([]);
@@ -11,7 +12,7 @@ function AddEditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficial
     if (barangay) {
       setName(barangay.name);
       setStatus(barangay.status);
-      setSelectedOfficials(barangay.skOfficials || []);
+      setSelectedOfficials(barangay.sk_officials || barangay.skOfficials || []);
     } else {
       setName('');
       setStatus('Active');
@@ -25,6 +26,7 @@ function AddEditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficial
     } else {
       document.body.classList.remove('overflow-hidden');
     }
+
     return () => {
       document.body.classList.remove('overflow-hidden');
     };
@@ -32,9 +34,47 @@ function AddEditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficial
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const initialFormValues = {
+      name: barangay?.name || '',
+      status: barangay?.status || 'Active',
+    };
+
+    const currentFormValues = {
+      name,
+      status,
+    };
+
+    const changedFields = Object.entries(currentFormValues).reduce((acc, [key, value]) => {
+      if (value !== initialFormValues[key]) {
+        acc[key] = value;
+      }
+      return acc;
+    }, {});
+
+    const initialOfficials = (barangay?.sk_officials || barangay?.skOfficials || [])
+      .map(Number)
+      .sort((a, b) => a - b);
+    const currentOfficials = selectedOfficials
+      .map(Number)
+      .sort((a, b) => a - b);
+
+    const officialsChanged =
+      initialOfficials.length !== currentOfficials.length ||
+      initialOfficials.some((id, index) => id !== currentOfficials[index]);
+
+    if (officialsChanged) {
+      changedFields.skOfficials = selectedOfficials;
+    }
+
+    if (Object.keys(changedFields).length === 0) {
+      toast.info('No changes detected');
+      return;
+    }
+
     setIsSaving(true);
     try {
-      await onSave({ name, status, skOfficials: selectedOfficials });
+      await onSave(changedFields);
     } finally {
       setIsSaving(false);
     }
@@ -46,14 +86,12 @@ function AddEditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficial
     );
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !barangay) return null;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-        <h2 className="modal-title">
-          {barangay ? 'Edit Barangay' : 'Add New Barangay'}
-        </h2>
+        <h2 className="modal-title">Edit Barangay</h2>
 
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-group">
@@ -78,13 +116,6 @@ function AddEditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficial
             </select>
           </div>
 
-
-{/* // const skOfficialsList = [
-//   { id: 1, name: 'Juan Dela Cruz', position: 'Chairperson', barangay: 'Napsan', status: 'Active' },
-//   { id: 2, name: 'Maria Santos', position: 'Secretary', barangay: 'Napsan', status: 'Active' },
-//   { id: 3, name: 'Pedro Pascual', position: 'Treasurer', barangay: 'Simpokan', status: 'Active' },
-//   { id: 4, name: 'Ana García', position: 'Auditor', barangay: 'Bagong Bayan', status: 'Inactive' }
-// ]; */}
           <div className="form-group">
             <label>SK Officials (Optional)</label>
             <div className="officials-list">
@@ -113,7 +144,7 @@ function AddEditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficial
               Cancel
             </button>
             <button type="submit" className="btn-save" disabled={isSaving}>
-              {isSaving ? 'Saving...' : barangay ? 'Update' : 'Save'}
+              {isSaving ? 'Saving...' : 'Update'}
             </button>
           </div>
         </form>
@@ -122,4 +153,4 @@ function AddEditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficial
   );
 }
 
-export default AddEditBarangayModal;
+export default EditBarangayModal;

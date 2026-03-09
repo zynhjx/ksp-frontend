@@ -1,54 +1,28 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styles from './BarangayManagement.module.css';
-import AddEditBarangayModal from './AddEditBarangayModal';
+import AddBarangayModal from './AddBarangayModal';
+import EditBarangayModal from './EditBarangayModal';
 import ViewSkOfficialsModal from './ViewSkOfficialsModal';
 import Table from './Table';
 import { apiFetch } from '../api';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import PageError from './PageError';
 import PageSkeleton from './PageSkeleton';
+
+const MySwal = withReactContent(Swal);
 
 function BarangayManagement() {
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
-  const [isAddEditModalOpen, setIsAddEditModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewSkModalOpen, setIsViewSkModalOpen] = useState(false);
   const [selectedBarangay, setSelectedBarangay] = useState(null);
   const [editingBarangay, setEditingBarangay] = useState(null);
+  const [selectedSkOfficials, setSelectedSkOfficials] = useState([])
   const apiUrl = import.meta.env.VITE_API_URL;
-
-  // Mock SK Officials data
-  // const skOfficialsList = [
-  //   { id: 1, name: 'Juan Dela Cruz', position: 'Chairperson', barangay: 'Napsan', status: 'Active' },
-  //   { id: 2, name: 'Maria Santos', position: 'Secretary', barangay: 'Napsan', status: 'Active' },
-  //   { id: 3, name: 'Pedro Pascual', position: 'Treasurer', barangay: 'Simpokan', status: 'Active' },
-  //   { id: 4, name: 'Ana García', position: 'Auditor', barangay: 'Bagong Bayan', status: 'Inactive' }
-  // ];
-
-  // {
-  //     id: 1,
-  //     name: 'Napsan',
-  //     total_youth: 15,
-  //     active_youth: 12, 
-  //     status: 'Active',
-  //     skOfficials: [1, 2]
-  //   },
-  //   {
-  //     id: 2,
-  //     name: 'Simpokan',
-  //     total_youth: 14,
-  //     active_youth: 12, 
-  //     status: 'Active',
-  //     skOfficials: [3]
-  //   },
-  //   {
-  //     id: 3,
-  //     name: 'Bagong Bayan',
-  //     total_youth: 15,
-  //     active_youth: 8, 
-  //     status: 'Inactive',
-  //     skOfficials: [4]
-  //   }
 
   const [barangays, setBarangays] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -56,7 +30,7 @@ function BarangayManagement() {
   const [unassignedSkOfficials, setUnassignedSkOfficials] = useState([])
 
 
-  async function fetchData() {
+  const fetchData = useCallback(async () => {
       setLoading(true);
       setIsError(false)
       try {
@@ -72,11 +46,11 @@ function BarangayManagement() {
       } finally {
           setLoading(false);
       }
-  }
+      }, [apiUrl]);
 
   useEffect(() => {
       fetchData();
-  }, []);
+  }, [fetchData]);
 
     // Show skeleton while loading
   if (loading) return <PageSkeleton />;
@@ -91,17 +65,21 @@ function BarangayManagement() {
 
   const handleAddBarangay = () => {
     setEditingBarangay(null);
-    setIsAddEditModalOpen(true);
+    setIsAddModalOpen(true);
   };
 
-  const handleEditBarangay = (id) => {
-    const barangay = barangays.find((b) => b.id === id);
+  const handleEditBarangay = (barangayOrId) => {
+    const barangayId = typeof barangayOrId === 'object' ? barangayOrId?.id : barangayOrId;
+    const barangay = barangays.find((b) => b.id === barangayId);
+    if (!barangay) {
+      toast.error('Barangay not found');
+      return;
+    }
     setEditingBarangay(barangay);
-    setIsAddEditModalOpen(true);
+    setIsEditModalOpen(true);
   };
 
-  const handleSaveBarangay = async (barangayData) => {
-    
+  const handleAddBarangaySave = async (barangayData) => {
     try {
       const res = await apiFetch(`${apiUrl}/api/admin/barangays`, {
         method: 'POST',
@@ -115,11 +93,9 @@ function BarangayManagement() {
         throw new Error(data.message || 'Failed to save barangay');
       }
 
-      // Successfully saved
       toast.success(`Barangay "${barangayData.name}" saved successfully!`);
-      setIsAddEditModalOpen(false);
+      setIsAddModalOpen(false);
 
-      // Refresh the list
       await fetchData();
     } catch (err) {
       console.error(err);
@@ -127,23 +103,82 @@ function BarangayManagement() {
     }
   };
 
-  const handleRemoveBarangay = (id) => {
-    console.log('Removing barangay with ID:', id);
-    setBarangays((prev) => prev.filter((b) => b.id !== id));
+  const handleEditBarangaySave = async (barangayData) => {
+    if (!editingBarangay?.id) {
+      toast.error('No barangay selected for editing');
+      return;
+    }
+
+    try {
+      const res = await apiFetch(`${apiUrl}/api/admin/barangays/${editingBarangay.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(barangayData),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to update barangay');
+      }
+
+      toast.success(data.message || `Barangay "${barangayData.name}" updated successfully!`);
+      setIsEditModalOpen(false);
+      setEditingBarangay(null);
+
+      await fetchData();
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message);
+    }
   };
 
-  const handleViewSkOfficials = (barangayId) => {
-    const barangay = barangays.find((b) => b.id === barangayId);
+  const handleRemoveBarangay = async (barangayOrId) => {
+    const barangayId = typeof barangayOrId === 'object' ? barangayOrId?.id : barangayOrId;
+    const barangayName = typeof barangayOrId === 'object'
+      ? barangayOrId?.name
+      : barangays.find((b) => b.id === barangayId)?.name;
+
+    const result = await MySwal.fire({
+      title: 'Delete barangay?',
+      text: barangayName
+        ? `This will permanently delete ${barangayName}.`
+        : 'This will permanently delete this barangay.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+    });
+
+    if (!result.isConfirmed) {
+      return;
+    }
+
+    try {
+      const res = await apiFetch(`${apiUrl}/api/admin/barangays/${barangayId}`, {
+        method: 'DELETE',
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to remove barangay');
+      }
+
+      toast.success(data.message || 'Barangay removed successfully');
+      await fetchData();
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message || 'Failed to remove barangay');
+    }
+  };
+
+  const handleViewSkOfficials = (skOfficialsIds, barangayId) => {
+    const barangay = barangays.find((b) => b.id === barangayId) || null;
     setSelectedBarangay(barangay);
+    setSelectedSkOfficials(skOfficialsIds || []);
     setIsViewSkModalOpen(true);
-  };
-
-  const getSkOfficialsForBarangay = (barangayId) => {
-    const barangay = barangays.find((b) => b.id === barangayId);
-    if (!barangay) return [];
-    return unassignedSkOfficials.filter((sk) =>
-      barangay.skOfficials.includes(sk.id)
-    );
   };
 
   return (
@@ -183,29 +218,40 @@ function BarangayManagement() {
       </div>
 
       <Table
+        onDelete={handleRemoveBarangay}
+        onEdit={handleEditBarangay}
         data={filtered}
-        hasActions={true}
         skTable={false}
         handleViewSkOfficials={handleViewSkOfficials}
         />
 
       
+      <AddBarangayModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSave={handleAddBarangaySave}
+        allSkOfficials={unassignedSkOfficials}
+      />
 
-      <AddEditBarangayModal
-        isOpen={isAddEditModalOpen}
-        onClose={() => setIsAddEditModalOpen(false)}
-        onSave={handleSaveBarangay}
+      <EditBarangayModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingBarangay(null);
+        }}
+        onSave={handleEditBarangaySave}
         barangay={editingBarangay}
         allSkOfficials={unassignedSkOfficials}
-        
       />
 
       <ViewSkOfficialsModal
         isOpen={isViewSkModalOpen}
         onClose={() => setIsViewSkModalOpen(false)}
         barangay={selectedBarangay}
-        skOfficials={selectedBarangay ? getSkOfficialsForBarangay(selectedBarangay.id) : []}
+        skOfficialsId={selectedSkOfficials}
       />
+
+      
     </div>
   );
 }

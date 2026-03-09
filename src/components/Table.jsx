@@ -1,7 +1,7 @@
 
 import style from './Table.module.css'
 
-export default function Table({ data, handleRowClick, hasActions, skTable, handleViewSkOfficials, onEdit, onDelete, deleteLabel = 'Remove' }) {
+export default function Table({ data, skTable, handleViewSkOfficials, onEdit, onDelete, deleteLabel = 'Remove' }) {
 
     return (
         <div className={style.tableWrapper}>
@@ -17,74 +17,74 @@ export default function Table({ data, handleRowClick, hasActions, skTable, handl
                       <th className={style.center}>Status</th>
                       <th className={style.center}>Actions</th>
                   </tr>
-              : 
-              <tr>
-                  <th>Barangay Name</th>
-                  <th className={style.center}>Active Youth</th>
-                  <th className={style.center}>SK Officials</th>
-                  <th className={style.center}>Status</th>
-                  <th className={style.center}>Actions</th>
-              </tr>}
+                  : 
+                  <tr>
+                      <th>Barangay Name</th>
+                      <th className={style.center}>Active Youth</th>
+                      <th className={style.center}>SK Officials</th>
+                      <th className={style.center}>Status</th>
+                      <th className={style.center}>Actions</th>
+                  </tr>
+                }
               
             </thead>
             <tbody>
               {data.map((row) => (
                 <tr
                   key={row.id}
-                  onClick={() => handleRowClick(row.id)}
                   className={style.tableRow}
                 >
                   {skTable ?
-                  <>
-                      <td>{row.name}</td>
-                      <td>{row.position}</td>
-                      <td>{row.barangay}</td>
-                      <td>{row.email}</td>
-                      <td className={style.center}>{row.status}</td>
-                  </>
-                  :
-                  <>
-                      <td>{row.name}</td>
-                      <td className={style.center}>{row.active_youth}</td>
-                      <td className={style.center}>
-                          <button
-                              className={`${style.skCountBtn} ${style.center}`}
-                              onClick={() => handleViewSkOfficials(row.id)}
-                              title="Click to view SK officials"
-                          >
-                              {(row.sk_officials || []).length}
-                          </button>
-                      </td>
-                      <td className={`${style.status} ${style.center}`}>
-                          {row.status}
-                      </td>
-                      
-                  </>
-              }
-                  
-
-                  {hasActions &&
-                      <td className={style.actions}>
-                          <button
-                            className={style.editBtn}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onEdit?.(row);
-                            }}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className={style.deleteBtn}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              onDelete?.(row);
-                            }}
-                          >
-                            {deleteLabel}
-                          </button>
-                      </td>
+                    <>
+                        <td>{row.name}</td>
+                        <td>{row.position}</td>
+                        <td>{row.barangay}</td>
+                        <td>{row.email}</td>
+                        <td className={style.center}>{row.status}</td>
+                    </>
+                    :
+                    <>
+                        <td>{row.name}</td>
+                        <td className={style.center}>{row.active_youth}</td>
+                        <td className={style.center}>
+                            <button
+                                className={`${style.skCountBtn} ${style.center}`}
+                                onClick={() => {
+                                  handleViewSkOfficials(row.sk_officials || [], row.id)
+                                }}
+                                title="Click to view SK officials"
+                            >
+                                {(row.sk_officials || []).length}
+                            </button>
+                        </td>
+                        <td className={`${style.status} ${style.center}`}>
+                            {row.status}
+                        </td>
+                        
+                    </>
                   }
+                  <td className={style.actions}>
+                      <button
+                        className={style.editBtn}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log(row)
+                          onEdit?.(row);
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className={style.deleteBtn}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDelete?.(row.id);
+                        }}
+                      >
+                        {deleteLabel}
+                      </button>
+                  </td>
+
                 </tr>
               ))}
             </tbody>
@@ -97,7 +97,6 @@ export default function Table({ data, handleRowClick, hasActions, skTable, handl
                 key={row.id} 
                 className={style.card} 
                 role="listitem"
-                onClick={() => handleRowClick(row.id)}
               >
                 {skTable ? (
                   <>
@@ -141,10 +140,12 @@ export default function Table({ data, handleRowClick, hasActions, skTable, handl
                         <p className={style.fieldValue}>
                           <button
                             className={style.skCountBtn}
-                            onClick={() => handleViewSkOfficials(row.id)}
+                            onClick={() => {
+                              handleViewSkOfficials(row.sk_officials || [], row.id)
+                            }}
                             title="Click to view SK officials"
                           >
-                            {(row.skOfficials || []).length}
+                            {(row.sk_officials || []).length}
                           </button>
                         </p>
                       </div>
@@ -156,7 +157,6 @@ export default function Table({ data, handleRowClick, hasActions, skTable, handl
                   </>
                 )}
                 
-                {hasActions && (
                   <div className={style.cardFooter}>
                     <button
                       className={style.editBtn}
@@ -171,13 +171,12 @@ export default function Table({ data, handleRowClick, hasActions, skTable, handl
                       className={style.deleteBtn}
                       onClick={(e) => {
                         e.stopPropagation();
-                        onDelete?.(row);
+                        onDelete?.(row.id);
                       }}
                     >
                       {deleteLabel}
                     </button>
                   </div>
-                )}
               </article>
             ))}
           </div>

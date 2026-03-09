@@ -1,17 +1,53 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import './ViewSkOfficialsModal.css';
+import { apiFetch } from '../api';
 
-function ViewSkOfficialsModal({ isOpen, onClose, barangay, skOfficials }) {
-  useEffect(() => {
-    if (isOpen) {
-      document.body.classList.add('overflow-hidden');
-    } else {
-      document.body.classList.remove('overflow-hidden');
+function ViewSkOfficialsModal({ isOpen, onClose, barangay, skOfficialsId }) {
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  const [skOfficials, setSkOfficials] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const getOfficials = useCallback(async () => {
+    try {
+      setLoading(true);
+
+      if (!skOfficialsId || skOfficialsId.length === 0) {
+        setSkOfficials([]);
+        return;
+      }
+
+      const responses = await Promise.all(
+        skOfficialsId.map(id =>
+          apiFetch(`${apiUrl}/api/admin/sk-officials/${id}`)
+        )
+      );
+
+      const data = await Promise.all(responses.map(r => r.json()));
+
+      const officials = data.flat();
+
+      setSkOfficials(officials);
+    } catch (error) {
+      console.error("Failed to fetch officials:", error);
+    } finally {
+      setLoading(false);
     }
+  }, [apiUrl, skOfficialsId]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      document.body.classList.remove('overflow-hidden');
+      return;
+    }
+
+    document.body.classList.add('overflow-hidden');
+    getOfficials();
+
     return () => {
       document.body.classList.remove('overflow-hidden');
     };
-  }, [isOpen]);
+  }, [isOpen, getOfficials]);
 
   if (!isOpen || !barangay) return null;
 
@@ -23,7 +59,9 @@ function ViewSkOfficialsModal({ isOpen, onClose, barangay, skOfficials }) {
         </h2>
 
         <div className="officials-content">
-          {skOfficials.length > 0 ? (
+          {loading ? (
+            <p className="loading-message">Loading SK officials...</p>
+          ) : skOfficials.length > 0 ? (
             <table className="officials-table">
               <thead>
                 <tr>
@@ -33,8 +71,8 @@ function ViewSkOfficialsModal({ isOpen, onClose, barangay, skOfficials }) {
                 </tr>
               </thead>
               <tbody>
-                {skOfficials.map((official) => (
-                  <tr key={official.id}>
+                {skOfficials.map((official, index) => (
+                  <tr key={index}>
                     <td className="official-name">{official.name}</td>
                     <td className="official-position">{official.position}</td>
                     <td className="official-status">
