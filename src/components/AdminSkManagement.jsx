@@ -155,8 +155,9 @@ function AdminSkManagement() {
     const matchesSearch =
       name.toLowerCase().includes(search.toLowerCase()) ||
       email.toLowerCase().includes(search.toLowerCase());
-    const matchesBarangay =
-      !filterBarangay || sk.barangay === filterBarangay;
+     const matchesBarangay =
+      !filterBarangay || 
+      (filterBarangay === "null" ? sk.barangay === null : sk.barangay === filterBarangay);
     const matchesPosition =
       !filterPosition || sk.position === filterPosition;
     const matchesStatus =
@@ -301,6 +302,9 @@ function AdminSkManagement() {
                   {b.name}
                 </option>
             ))}
+            <option value="null">
+                None
+              </option>
           </select>
           <select
             value={filterPosition}
