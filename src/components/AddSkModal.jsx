@@ -9,6 +9,7 @@ function AddSkModal({ isOpen, onClose, onSave }) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [position, setPosition] = useState('');
+  const [status, setStatus] = useState('Active');
   const [barangay, setBarangay] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -45,6 +46,7 @@ function AddSkModal({ isOpen, onClose, onSave }) {
     setFirstName('');
     setLastName('');
     setPosition('');
+    setStatus('Active');
     setBarangay('');
     setEmail('');
     setPassword('');
@@ -63,9 +65,9 @@ function AddSkModal({ isOpen, onClose, onSave }) {
       firstName,
       lastName,
       position,
-      barangay,
+      status,
+      barangay: barangay || null,
       email,
-      status: 'Active'
     };
 
     officialPayload.password = password;
@@ -120,13 +122,24 @@ function AddSkModal({ isOpen, onClose, onSave }) {
           </div>
 
           <div className="form-group">
+            <label>Status</label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              required
+            >
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+
+          <div className="form-group">
             <label>Barangay</label>
             <select
               value={barangay}
               onChange={(e) => setBarangay(e.target.value)}
-              required
             >
-              <option value="">Select barangay</option>
+              <option value="">None (Unassigned)</option>
               {barangays.map((b) => (
                 <option key={b.id} value={b.name}>
                   {b.name}

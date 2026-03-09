@@ -111,6 +111,7 @@ function AdminSkManagement() {
       try {
           const res = await apiFetch(`${apiUrl}/api/admin/sk-officials`);
           const data = await res.json();
+          
           setSkList(data);
       } catch (err) {
           console.error(err.message);
@@ -243,9 +244,7 @@ function AdminSkManagement() {
         throw new Error(result.message);
       }
 
-      const created = await res.json();
-
-      setSkList((prev) => [...prev, created]);
+      await fetchData()
       toast.success('SK official added successfully');
       setIsAddModalOpen(false);
     } catch (err) {

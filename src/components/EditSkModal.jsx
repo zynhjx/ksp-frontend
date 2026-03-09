@@ -9,6 +9,7 @@ function EditSkModal({ isOpen, onClose, onSave, initialData }) {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [position, setPosition] = useState('');
+  const [status, setStatus] = useState('Active');
   const [barangay, setBarangay] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -46,6 +47,7 @@ function EditSkModal({ isOpen, onClose, onSave, initialData }) {
     setFirstName(initialData.firstName || initialFirstName);
     setLastName(initialData.lastName || restName.join(' '));
     setPosition(initialData.position || '');
+    setStatus(initialData.status || 'Active');
     setBarangay(initialData.barangay || '');
     setEmail(initialData.email || '');
     setPassword('');
@@ -65,6 +67,7 @@ function EditSkModal({ isOpen, onClose, onSave, initialData }) {
       firstName: initialData?.firstName || initialFirstName,
       lastName: initialData?.lastName || restName.join(' '),
       position: initialData?.position || '',
+      status: initialData?.status || 'Active',
       barangay: initialData?.barangay || '',
       email: initialData?.email || ''
     };
@@ -73,6 +76,7 @@ function EditSkModal({ isOpen, onClose, onSave, initialData }) {
       firstName,
       lastName,
       position,
+      status,
       barangay,
       email
     };
@@ -89,11 +93,16 @@ function EditSkModal({ isOpen, onClose, onSave, initialData }) {
       changedFields.password = password;
     }
 
+    if (Object.prototype.hasOwnProperty.call(changedFields, 'barangay')) {
+      changedFields.barangay = changedFields.barangay || null;
+    }
+
     if (Object.keys(changedFields).length === 0) {
       toast.info('No changes detected');
       return;
     }
 
+    console.log(changedFields)
     onSave(changedFields);
   };
 
@@ -143,13 +152,24 @@ function EditSkModal({ isOpen, onClose, onSave, initialData }) {
           </div>
 
           <div className="form-group">
+            <label>Status</label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              required
+            >
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+
+          <div className="form-group">
             <label>Barangay</label>
             <select
               value={barangay}
               onChange={(e) => setBarangay(e.target.value)}
-              required
             >
-              <option value="">Select barangay</option>
+              <option value="">None (Unassigned)</option>
               {barangays.map((b) => (
                 <option key={b.id} value={b.name}>
                   {b.name}

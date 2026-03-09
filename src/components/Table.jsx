@@ -38,7 +38,7 @@ export default function Table({ data, skTable, handleViewSkOfficials, onEdit, on
                     <>
                         <td>{row.name}</td>
                         <td>{row.position}</td>
-                        <td>{row.barangay}</td>
+                        <td>{row.barangay || "None"}</td>
                         <td>{row.email}</td>
                         <td className={style.center}>{row.status}</td>
                     </>
@@ -46,8 +46,8 @@ export default function Table({ data, skTable, handleViewSkOfficials, onEdit, on
                     <>
                         <td>{row.name}</td>
                         <td className={style.center}>{row.active_youth}</td>
-                        <td className={style.center}>
-                            <button
+                        <td className={style.center}>{row.sk_officials}</td>
+                        {/* <button
                                 className={`${style.skCountBtn} ${style.center}`}
                                 onClick={() => {
                                   handleViewSkOfficials(row.sk_officials || [], row.id)
@@ -55,8 +55,7 @@ export default function Table({ data, skTable, handleViewSkOfficials, onEdit, on
                                 title="Click to view SK officials"
                             >
                                 {(row.sk_officials || []).length}
-                            </button>
-                        </td>
+                            </button> */}
                         <td className={`${style.status} ${style.center}`}>
                             {row.status}
                         </td>
@@ -78,7 +77,7 @@ export default function Table({ data, skTable, handleViewSkOfficials, onEdit, on
                         className={style.deleteBtn}
                         onClick={(e) => {
                           e.stopPropagation();
-                          onDelete?.(row.id);
+                          onDelete?.(row);
                         }}
                       >
                         {deleteLabel}
@@ -113,7 +112,7 @@ export default function Table({ data, skTable, handleViewSkOfficials, onEdit, on
                       </div>
                       <div className={style.cardField}>
                         <label className={style.fieldLabel}>Barangay</label>
-                        <p className={style.fieldValue}>{row.barangay}</p>
+                        <p className={style.fieldValue}>{row.barangay || "None"}</p>
                       </div>
                       <div className={style.cardField}>
                         <label className={style.fieldLabel}>Email</label>
