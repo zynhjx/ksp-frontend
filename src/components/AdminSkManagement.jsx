@@ -231,6 +231,7 @@ function AdminSkManagement() {
   };
 
   const handleAddModalSave = async (newSk) => {
+    console.log(newSk)
     try {
       const res = await apiFetch(`${apiUrl}/api/admin/sk-management`, {
         method: 'POST',

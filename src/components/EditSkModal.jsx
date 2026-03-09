@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 import './EditSkModal.css';
 import { apiFetch } from '../api';
 
@@ -54,7 +55,7 @@ function EditSkModal({ isOpen, onClose, onSave, initialData }) {
     setConfirmPassword('');
   }, [isOpen, initialData]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (password && password !== confirmPassword) {
@@ -102,8 +103,21 @@ function EditSkModal({ isOpen, onClose, onSave, initialData }) {
       return;
     }
 
-    console.log(changedFields)
-    onSave(changedFields);
+    const confirmation = await Swal.fire({
+      title: 'Confirm update?',
+      text: 'Are you sure you want to commit these edits?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, update',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+    });
+
+    if (!confirmation.isConfirmed) {
+      return;
+    }
+
+    await onSave(changedFields);
   };
 
   if (!isOpen) return null;

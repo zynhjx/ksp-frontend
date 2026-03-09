@@ -66,7 +66,7 @@ function AddSkModal({ isOpen, onClose, onSave }) {
       lastName,
       position,
       status,
-      barangay: barangay || null,
+      barangay,
       email,
     };
 

@@ -109,6 +109,8 @@ function BarangayManagement() {
       return;
     }
 
+    console.log(barangayData)
+
     try {
       const res = await apiFetch(`${apiUrl}/api/admin/barangays/${editingBarangay.id}`, {
         method: 'PUT',
@@ -241,7 +243,7 @@ function BarangayManagement() {
         }}
         onSave={handleEditBarangaySave}
         barangay={editingBarangay}
-        allSkOfficials={unassignedSkOfficials}
+        unassignedSkOfficials={unassignedSkOfficials}
       />
 
       <ViewSkOfficialsModal

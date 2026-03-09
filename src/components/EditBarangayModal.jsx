@@ -1,39 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import Swal from 'sweetalert2';
 import './AddEditBarangayModal.css';
 
-const normalizeOfficialsToIds = (officials) => {
-  let normalizedOfficials = officials;
+// const normalizeOfficialsToIds = (officials) => {
+//   let normalizedOfficials = officials;
 
-  if (typeof normalizedOfficials === 'string') {
-    try {
-      normalizedOfficials = JSON.parse(normalizedOfficials);
-    } catch {
-      normalizedOfficials = normalizedOfficials
-        .split(',')
-        .map((value) => value.trim())
-        .filter(Boolean);
-    }
-  }
+//   if (typeof normalizedOfficials === 'string') {
+//     try {
+//       normalizedOfficials = JSON.parse(normalizedOfficials);
+//     } catch {
+//       normalizedOfficials = normalizedOfficials
+//         .split(',')
+//         .map((value) => value.trim())
+//         .filter(Boolean);
+//     }
+//   }
 
-  if (!Array.isArray(normalizedOfficials)) {
-    normalizedOfficials = [];
-  }
+//   if (!Array.isArray(normalizedOfficials)) {
+//     normalizedOfficials = [];
+//   }
 
-  return normalizedOfficials
-    .map((official) => {
-      if (official && typeof official === 'object') {
-        return Number(official.id ?? official.sk_official_id ?? official.value);
-      }
+//   return normalizedOfficials
+//     .map((official) => {
+//       if (official && typeof official === 'object') {
+//         return Number(official.id ?? official.sk_official_id ?? official.value);
+//       }
 
-      return Number(official);
-    })
-    .filter((id) => Number.isFinite(id));
-};
+//       return Number(official);
+//     })
+//     .filter((id) => Number.isFinite(id));
+// };
 
-function EditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficials = [] }) {
+function EditBarangayModal({ isOpen, onClose, onSave, barangay, unassignedSkOfficials = [] }) {
   const [name, setName] = useState('');
   const [status, setStatus] = useState('Active');
+  const [skOfficials, setSkOfficials] = useState([])
   const [selectedOfficials, setSelectedOfficials] = useState([]);
   const [isSaving, setIsSaving] = useState('');
 
@@ -41,10 +43,13 @@ function EditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficials =
     if (barangay) {
       setName(barangay.name);
       setStatus(barangay.status);
-      setSelectedOfficials(normalizeOfficialsToIds(barangay.sk_officials || barangay.skOfficials));
+      setSkOfficials(Array.isArray(barangay.sk_officials) ? barangay.sk_officials : [])
+      setSelectedOfficials(Array.isArray(barangay.sk_officials) ? barangay.sk_officials : [])
+      
     } else {
       setName('');
       setStatus('Active');
+      setSkOfficials([]);
       setSelectedOfficials([]);
     }
   }, [barangay, isOpen]);
@@ -60,6 +65,11 @@ function EditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficials =
       document.body.classList.remove('overflow-hidden');
     };
   }, [isOpen]);
+
+  const currentAndAvailableSkOfficials = [
+    ...(skOfficials || []),
+    ...(unassignedSkOfficials || [])
+  ].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -81,10 +91,14 @@ function EditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficials =
       return acc;
     }, {});
 
-    const initialOfficials = normalizeOfficialsToIds(barangay?.sk_officials || barangay?.skOfficials)
+    const initialOfficials = (skOfficials || [])
+      .map((official) => Number(official.id))
+      .filter((id) => Number.isFinite(id))
       .sort((a, b) => a - b);
-    const currentOfficials = normalizeOfficialsToIds(selectedOfficials)
-      .map(Number)
+
+    const currentOfficials = (selectedOfficials || [])
+      .map((official) => Number(official.id))
+      .filter((id) => Number.isFinite(id))
       .sort((a, b) => a - b);
 
     const officialsChanged =
@@ -92,11 +106,25 @@ function EditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficials =
       initialOfficials.some((id, index) => id !== currentOfficials[index]);
 
     if (officialsChanged) {
-      changedFields.skOfficials = currentOfficials;
+      changedFields.sk_officials = currentOfficials;
     }
 
     if (Object.keys(changedFields).length === 0) {
       toast.info('No changes detected');
+      return;
+    }
+
+    const confirmation = await Swal.fire({
+      title: 'Confirm update?',
+      text: 'Are you sure you want to apply these changes?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, update',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+    });
+
+    if (!confirmation.isConfirmed) {
       return;
     }
 
@@ -108,16 +136,14 @@ function EditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficials =
     }
   };
 
-  const handleOfficialToggle = (id) => {
-    const officialId = Number(id);
+  const handleOfficialToggle = (official) => {
+    setSelectedOfficials((prev) => {
+      const safePrev = Array.isArray(prev) ? prev : [];
 
-    if (!Number.isFinite(officialId)) return;
-
-    setSelectedOfficials((prev) =>
-      prev.includes(officialId)
-        ? prev.filter((official) => official !== officialId)
-        : [...prev, officialId]
-    );
+      return safePrev.some((existingOfficial) => existingOfficial.id === official.id)
+        ? safePrev.filter((existingOfficial) => existingOfficial.id !== official.id)
+        : [...safePrev, official];
+    });
   };
 
   if (!isOpen || !barangay) return null;
@@ -153,22 +179,56 @@ function EditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficials =
           <div className="form-group">
             <label>SK Officials (Optional)</label>
             <div className="officials-list">
-              {allSkOfficials.length > 0 ? (
-                allSkOfficials.map((official) => (
-                  <div key={official.id} className="official-checkbox">
-                    <input
-                      type="checkbox"
-                      id={`official-${official.id}`}
-                      checked={selectedOfficials.includes(Number(official.id))}
-                      onChange={() => handleOfficialToggle(official.id)}
-                    />
-                    <label htmlFor={`official-${official.id}`}>
-                      {official.name} ({official.position})
-                    </label>
-                  </div>
-                ))
-              ) : (
+              {currentAndAvailableSkOfficials.length === 0 ? (
                 <p className="no-officials-message">No SK officials available</p>
+              ) : (
+                <>
+                  {currentAndAvailableSkOfficials.map((official) => (
+                      <div key={official.id} className="official-checkbox">
+                        <input
+                          type="checkbox"
+                          id={`official-${official.id}`}
+                          checked={selectedOfficials?.some(so => so.id === official.id)}
+                          onChange={() => handleOfficialToggle(official)}
+                        />
+                        <label htmlFor={`official-${official.id}`}>
+                          {official.name} ({official.position})
+                        </label>
+                      </div>
+                    ))
+                  }
+
+
+                  {/* {skOfficials?.map((official) => (
+                      <div key={official.id} className="official-checkbox">
+                        <input
+                          type="checkbox"
+                          id={`official-${official.id}`}
+                          checked={true}
+                          onChange={() => handleOfficialToggle(official.id)}
+                        />
+                        <label htmlFor={`official-${official.id}`}>
+                          {official.name} ({official.position})
+                        </label>
+                      </div>
+                    ))
+                  }
+                  {unassignedSkOfficials.map((official) => (
+                      <div key={official.id} className="official-checkbox">
+                        <input
+                          type="checkbox"
+                          id={`official-${official.id}`}
+                          checked={selectedOfficials.includes(Number(official.id))}
+                          onChange={() => handleOfficialToggle(official.id)}
+                        />
+                        <label htmlFor={`official-${official.id}`}>
+                          {official.name} ({official.position})
+                        </label>
+                      </div>
+                    ))
+                  } */}
+                  
+                </>
               )}
             </div>
           </div>
