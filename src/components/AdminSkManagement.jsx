@@ -132,7 +132,7 @@ function AdminSkManagement() {
       }
 
       const data = await res.json();
-      setBarangays(data.barangays); // or data depending on your API
+      setBarangays(data.barangays);
     } catch (err) {
       console.error(err);
       toast.error("Failed to load barangays");
@@ -296,10 +296,12 @@ function AdminSkManagement() {
             onChange={(e) => setFilterBarangay(e.target.value)}
           >
             <option value="">All Barangays</option>
-            {barangays.map((b) => (
-              <option key={b.id} value={b.name}>
-                {b.name}
-              </option>
+            {barangays
+              .filter(b => b.status === "Active")
+              .map((b) => (
+                <option key={b.id} value={b.name}>
+                  {b.name}
+                </option>
             ))}
           </select>
           <select

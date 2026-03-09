@@ -30,11 +30,12 @@ const EmptyChartCard = memo(function EmptyChartCard({ title }) {
 
 const PieChartCard = memo(function PieChartCard({ title, data, innerRadius, outerRadius }) {
     if (!hasItems(data)) {
+        console.log("hahah")
         return <EmptyChartCard title={title} />;
+        
     }
 
     const shouldAnimate = data.length < LARGE_DATA_THRESHOLD;
-
     return (
         <div className={styles.chartCard}>
             <h3 className={styles.chartTitle}>{title}</h3>
@@ -71,7 +72,6 @@ const BarChartCard = memo(function BarChartCard({ title, data, xDataKey, barData
     }
 
     const shouldAnimate = data.length < LARGE_DATA_THRESHOLD;
-
     return (
         <div className={styles.chartCard}>
             <h3 className={styles.chartTitle}>{title}</h3>
@@ -109,8 +109,9 @@ function AdminDashboard() {
     const fetchAgeData = useCallback(async () => {
         try {
             const res = await apiFetch(`${apiUrl}/api/admin/age-distribution`);
+            if (!res.ok) throw new Error('Failed to fetch age distribution');
             const data = await res.json();
-            setAgeData(data);
+            setAgeData(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error(err);
             toast.error("Failed to fetch age distribution");
@@ -120,33 +121,37 @@ function AdminDashboard() {
     const fetchEducationData = useCallback(async () => {
         try {
             const res = await apiFetch(`${apiUrl}/api/admin/education-distribution`);
+            if (!res.ok) throw new Error('Failed to fetch education distribution');
             const data = await res.json();
-            setEducationData(data)
+            setEducationData(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error(err);
-            toast.error("Failed to fetch age distribution");
+            toast.error("Failed to fetch education distribution");
         }
     }, [apiUrl]);
 
     const fetchEmploymentData = useCallback(async () => {
         try {
             const res = await apiFetch(`${apiUrl}/api/admin/employment-distribution`);
+            if (!res.ok) throw new Error('Failed to fetch employment distribution');
             const data = await res.json();
-            setEmploymentData(data)
+            console.log(data)
+            setEmploymentData(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error(err);
-            toast.error("Failed to fetch age distribution");
+            toast.error("Failed to fetch employment distribution");
         }
     }, [apiUrl]);
 
     const fetchActiveYouthData = useCallback(async () => {
         try {
             const res = await apiFetch(`${apiUrl}/api/admin/active-distribution`);
+            if (!res.ok) throw new Error('Failed to fetch active youth distribution');
             const data = await res.json();
-            setActiveYoutData(data)
+            setActiveYoutData(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error(err);
-            toast.error("Failed to fetch age distribution");
+            toast.error("Failed to fetch active youth distribution");
         }
     }, [apiUrl]);
 
@@ -175,12 +180,14 @@ function AdminDashboard() {
         setIsError(false)
         try {
             const res = await apiFetch(`${apiUrl}/api/admin/dashboard`);
+            if (!res.ok) throw new Error('Failed to fetch dashboard data');
             const data = await res.json();
-            setStats(data.stats);
-            setBarangays(data.barangayOverview)
+            setStats(Array.isArray(data?.stats) ? data.stats : []);
+            setBarangays(Array.isArray(data?.barangayOverview) ? data.barangayOverview : []);
         } catch (err) {
             console.error(err.message);
-            toast.error(err.message)
+            setIsError(true);
+            toast.error(err.message || 'Failed to fetch dashboard data');
             
         } finally {
             setLoading(false);

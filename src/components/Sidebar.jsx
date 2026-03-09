@@ -65,9 +65,9 @@ function Sidebar({ activePath }) {
       return (
         [
           {title: "Dashboard", path: "/admin/dashboard", svg: <DashboardIcon />},
+          {title: "Youth Management", path: "/admin/youth-management", svg: <ReportsIcon />},
           {title: "SK Management", path: "/admin/sk-management", svg: <SkManagementIcon />},
           {title: "Barangays", path: "/admin/barangays", svg: <BarangaysIcon />},
-          // {title: "Reports", path: "/admin/reports", svg: <ReportsIcon />}
         ]
       )
     }
