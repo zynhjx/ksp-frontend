@@ -109,6 +109,7 @@ function AdminDashboard() {
     const fetchAgeData = useCallback(async () => {
         try {
             const res = await apiFetch(`${apiUrl}/api/admin/age-distribution`);
+            
             if (!res.ok) throw new Error('Failed to fetch age distribution');
             const data = await res.json();
             setAgeData(Array.isArray(data) ? data : []);
@@ -135,7 +136,6 @@ function AdminDashboard() {
             const res = await apiFetch(`${apiUrl}/api/admin/employment-distribution`);
             if (!res.ok) throw new Error('Failed to fetch employment distribution');
             const data = await res.json();
-            console.log(data)
             setEmploymentData(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error(err);
@@ -154,26 +154,6 @@ function AdminDashboard() {
             toast.error("Failed to fetch active youth distribution");
         }
     }, [apiUrl]);
-
-    // const educationData = [
-    //     { name: 'Junior High', value: 35 },
-    //     { name: 'Senior High', value: 88 },
-    //     { name: 'College', value: 67 },
-    //     { name: 'Graduate', value: 20 }
-    // ];
-
-    // const employmentData = [
-    //     { name: 'Student', value: 110 },
-    //     { name: 'Employed', value: 52 },
-    //     { name: 'Unemployed', value: 34 },
-    //     { name: 'Self-employed', value: 14 }
-    // ];
-
-    // const activeYouthData = [
-    //     { barangay: 'Napsan', count: 80 },
-    //     { barangay: 'Simpokan', count: 59 },
-    //     { barangay: 'Bagong Bayan', count: 42 },
-    // ];
 
     const fetchData = useCallback(async () => {
         setLoading(true);

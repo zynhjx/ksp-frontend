@@ -296,9 +296,7 @@ function AdminSkManagement() {
             onChange={(e) => setFilterBarangay(e.target.value)}
           >
             <option value="">All Barangays</option>
-            {barangays
-              .filter(b => b.status === "Active")
-              .map((b) => (
+            {barangays.map((b) => (
                 <option key={b.id} value={b.name}>
                   {b.name}
                 </option>
