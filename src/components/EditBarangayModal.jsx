@@ -2,6 +2,35 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import './AddEditBarangayModal.css';
 
+const normalizeOfficialsToIds = (officials) => {
+  let normalizedOfficials = officials;
+
+  if (typeof normalizedOfficials === 'string') {
+    try {
+      normalizedOfficials = JSON.parse(normalizedOfficials);
+    } catch {
+      normalizedOfficials = normalizedOfficials
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean);
+    }
+  }
+
+  if (!Array.isArray(normalizedOfficials)) {
+    normalizedOfficials = [];
+  }
+
+  return normalizedOfficials
+    .map((official) => {
+      if (official && typeof official === 'object') {
+        return Number(official.id ?? official.sk_official_id ?? official.value);
+      }
+
+      return Number(official);
+    })
+    .filter((id) => Number.isFinite(id));
+};
+
 function EditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficials = [] }) {
   const [name, setName] = useState('');
   const [status, setStatus] = useState('Active');
@@ -12,7 +41,7 @@ function EditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficials =
     if (barangay) {
       setName(barangay.name);
       setStatus(barangay.status);
-      setSelectedOfficials(barangay.sk_officials || barangay.skOfficials || []);
+      setSelectedOfficials(normalizeOfficialsToIds(barangay.sk_officials || barangay.skOfficials));
     } else {
       setName('');
       setStatus('Active');
@@ -52,10 +81,9 @@ function EditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficials =
       return acc;
     }, {});
 
-    const initialOfficials = (barangay?.sk_officials || barangay?.skOfficials || [])
-      .map(Number)
+    const initialOfficials = normalizeOfficialsToIds(barangay?.sk_officials || barangay?.skOfficials)
       .sort((a, b) => a - b);
-    const currentOfficials = selectedOfficials
+    const currentOfficials = normalizeOfficialsToIds(selectedOfficials)
       .map(Number)
       .sort((a, b) => a - b);
 
@@ -64,7 +92,7 @@ function EditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficials =
       initialOfficials.some((id, index) => id !== currentOfficials[index]);
 
     if (officialsChanged) {
-      changedFields.skOfficials = selectedOfficials;
+      changedFields.skOfficials = currentOfficials;
     }
 
     if (Object.keys(changedFields).length === 0) {
@@ -81,8 +109,14 @@ function EditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficials =
   };
 
   const handleOfficialToggle = (id) => {
+    const officialId = Number(id);
+
+    if (!Number.isFinite(officialId)) return;
+
     setSelectedOfficials((prev) =>
-      prev.includes(id) ? prev.filter((o) => o !== id) : [...prev, id]
+      prev.includes(officialId)
+        ? prev.filter((official) => official !== officialId)
+        : [...prev, officialId]
     );
   };
 
@@ -125,7 +159,7 @@ function EditBarangayModal({ isOpen, onClose, onSave, barangay, allSkOfficials =
                     <input
                       type="checkbox"
                       id={`official-${official.id}`}
-                      checked={selectedOfficials.includes(official.id)}
+                      checked={selectedOfficials.includes(Number(official.id))}
                       onChange={() => handleOfficialToggle(official.id)}
                     />
                     <label htmlFor={`official-${official.id}`}>

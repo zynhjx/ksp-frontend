@@ -40,7 +40,6 @@ export default function Table({ data, skTable, handleViewSkOfficials, onEdit, on
                         <td>{row.position}</td>
                         <td>{row.barangay || "None"}</td>
                         <td>{row.email}</td>
-                        <td className={style.center}>{row.status}</td>
                     </>
                     :
                     <>
@@ -56,12 +55,11 @@ export default function Table({ data, skTable, handleViewSkOfficials, onEdit, on
                             >
                                 {(row.sk_officials || []).length}
                             </button> */}
-                        <td className={`${style.status} ${style.center}`}>
-                            {row.status}
-                        </td>
-                        
                     </>
                   }
+                  <td className={`${style.status} ${style.center} ${row.status === "Active" ? style.green : style.red}`}>
+                      {row.status}
+                  </td>
                   <td className={style.actions}>
                       <button
                         className={style.editBtn}

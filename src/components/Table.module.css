@@ -54,6 +54,18 @@
     background: #f0f7ff;
 }
 
+.table .status {
+    font-weight: bold;
+}
+
+.table .status.green {
+    color: rgb(0, 121, 0);
+}
+
+.table .status.red {
+    color: rgb(240, 0, 0);
+}
+
 .table td.actions {
     display: flex;
     justify-content: center;
