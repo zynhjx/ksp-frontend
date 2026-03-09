@@ -45,7 +45,7 @@ export default function Table({ data, skTable, handleViewSkOfficials, onEdit, on
                     <>
                         <td>{row.name}</td>
                         <td className={style.center}>{row.active_youth}</td>
-                        <td className={style.center}>{row.sk_officials}</td>
+                        <td className={style.center}>{row.sk_officials?.length || 0}</td>
                         {/* <button
                                 className={`${style.skCountBtn} ${style.center}`}
                                 onClick={() => {
