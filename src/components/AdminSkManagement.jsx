@@ -231,7 +231,6 @@ function AdminSkManagement() {
   };
 
   const handleAddModalSave = async (newSk) => {
-    console.log(newSk)
     try {
       const res = await apiFetch(`${apiUrl}/api/admin/sk-management`, {
         method: 'POST',
@@ -338,6 +337,7 @@ function AdminSkManagement() {
 
       <Table
         data={filtered}
+        tableType="sk"
         skTable={true}
         handleRowClick={handleRowClick}
         hasActions={true}

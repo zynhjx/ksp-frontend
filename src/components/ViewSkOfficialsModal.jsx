@@ -4,6 +4,7 @@ import { apiFetch } from '../api';
 
 function ViewSkOfficialsModal({ isOpen, onClose, barangay, skOfficialsId }) {
   const apiUrl = import.meta.env.VITE_API_URL;
+  console.log(skOfficialsId)
 
   const [skOfficials, setSkOfficials] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,19 +18,70 @@ function ViewSkOfficialsModal({ isOpen, onClose, barangay, skOfficialsId }) {
         return;
       }
 
-      const responses = await Promise.all(
-        skOfficialsId.map(id =>
-          apiFetch(`${apiUrl}/api/admin/sk-officials/${id}`)
-        )
-      );
+      const officialsInput = Array.isArray(skOfficialsId) ? skOfficialsId : [skOfficialsId];
 
-      const data = await Promise.all(responses.map(r => r.json()));
+      const officialsFromPayload = officialsInput
+        .filter((value) => value && typeof value === 'object')
+        .map((official) => ({
+          id: Number(official.id ?? official.sk_official_id),
+          name: official.name || '',
+          position: official.position || '',
+          status: official.status
+        }))
+        .filter((official) => Number.isFinite(official.id));
 
-      const officials = data.flat();
+      const officialsIdsToFetch = officialsInput
+        .map((value) => {
+          if (typeof value === 'number' || typeof value === 'string') {
+            return Number(value);
+          }
+          if (value && typeof value === 'object') {
+            return Number(value.id ?? value.sk_official_id);
+          }
+          return NaN;
+        })
+        .filter((id) => Number.isFinite(id))
+        .filter((id) => !officialsFromPayload.some((official) => official.id === id));
 
-      setSkOfficials(officials);
+      let fetchedOfficials = [];
+
+      if (officialsIdsToFetch.length > 0) {
+        const responses = await Promise.all(
+          officialsIdsToFetch.map((id) => apiFetch(`${apiUrl}/api/admin/sk-officials/${id}`))
+        );
+
+        const data = await Promise.all(
+          responses.map(async (response) => {
+            if (!response.ok) {
+              return null;
+            }
+            return response.json();
+          })
+        );
+
+        fetchedOfficials = data
+          .filter(Boolean)
+          .flatMap((item) => (Array.isArray(item) ? item : [item]))
+          .map((official) => ({
+            id: Number(official.id ?? official.sk_official_id),
+            name: official.name || '',
+            position: official.position || '',
+            status: official.status || 'Inactive'
+          }))
+          .filter((official) => Number.isFinite(official.id));
+      }
+
+      const mergedOfficialsMap = new Map();
+      [...officialsFromPayload, ...fetchedOfficials].forEach((official) => {
+        if (!mergedOfficialsMap.has(official.id)) {
+          mergedOfficialsMap.set(official.id, official);
+        }
+      });
+
+      setSkOfficials(Array.from(mergedOfficialsMap.values()));
     } catch (error) {
       console.error("Failed to fetch officials:", error);
+      setSkOfficials([]);
     } finally {
       setLoading(false);
     }

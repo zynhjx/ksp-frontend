@@ -18,6 +18,8 @@ import AdminReports from './components/AdminReports'
 import AdminSettings from './components/AdminSettings'
 import BarangayManagement from './components/BarangayManagement'
 import PageSkeleton from './components/PageSkeleton'
+import SkDashboard from './components/SkDashboard'
+import AdminYouthManagement from './components/AdminYouthManagement'
 
 function App() {
   return (
@@ -36,6 +38,15 @@ function App() {
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<YouthDashboard />} />
         </Route>
+
+        <Route path='/sk' element={<PrivateRoute allowedRoles={["SK"]}>
+            <SidebarProvider >
+              <AppLayout role={"SK"}/>
+            </SidebarProvider>
+          </PrivateRoute>}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<SkDashboard />} />
+        </Route>
         
         
         <Route path='/admin' element={<PrivateRoute allowedRoles={["Admin"]}>
@@ -45,6 +56,7 @@ function App() {
           </PrivateRoute>}>
               <Route index element={<Navigate to="dashboard" replace />} />
               <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="youth-management" element={<AdminYouthManagement />} />
               <Route path="sk-management" element={<AdminSkManagement />} />
               <Route path="barangays" element={<BarangayManagement />} />
               {/* <Route path="reports" element={<AdminReports />} /> */}

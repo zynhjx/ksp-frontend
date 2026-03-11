@@ -197,36 +197,6 @@ function EditBarangayModal({ isOpen, onClose, onSave, barangay, unassignedSkOffi
                       </div>
                     ))
                   }
-
-
-                  {/* {skOfficials?.map((official) => (
-                      <div key={official.id} className="official-checkbox">
-                        <input
-                          type="checkbox"
-                          id={`official-${official.id}`}
-                          checked={true}
-                          onChange={() => handleOfficialToggle(official.id)}
-                        />
-                        <label htmlFor={`official-${official.id}`}>
-                          {official.name} ({official.position})
-                        </label>
-                      </div>
-                    ))
-                  }
-                  {unassignedSkOfficials.map((official) => (
-                      <div key={official.id} className="official-checkbox">
-                        <input
-                          type="checkbox"
-                          id={`official-${official.id}`}
-                          checked={selectedOfficials.includes(Number(official.id))}
-                          onChange={() => handleOfficialToggle(official.id)}
-                        />
-                        <label htmlFor={`official-${official.id}`}>
-                          {official.name} ({official.position})
-                        </label>
-                      </div>
-                    ))
-                  } */}
                   
                 </>
               )}

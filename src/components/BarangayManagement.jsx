@@ -80,6 +80,14 @@ function BarangayManagement() {
   };
 
   const handleAddBarangaySave = async (barangayData) => {
+    const isDuplicate = barangays.some(
+      (b) => b.name.toLowerCase() === barangayData.name.trim().toLowerCase()
+    );
+    if (isDuplicate) {
+      toast.error(`A barangay named "${barangayData.name}" already exists.`);
+      return;
+    }
+
     try {
       const res = await apiFetch(`${apiUrl}/api/admin/barangays`, {
         method: 'POST',
@@ -87,10 +95,14 @@ function BarangayManagement() {
         body: JSON.stringify(barangayData),
       });
 
-      const data = await res.json(); // parse the JSON
+      const data = await res.json();
+
 
       if (!res.ok) {
-        throw new Error(data.message || 'Failed to save barangay');
+        throw new Error(
+          data.message ||
+          (res.status === 409 ? `A barangay named "${barangayData.name}" already exists.` : 'Failed to save barangay')
+        );
       }
 
       toast.success(`Barangay "${barangayData.name}" saved successfully!`);
@@ -175,14 +187,7 @@ function BarangayManagement() {
       toast.error(err.message || 'Failed to remove barangay');
     }
   };
-
-  const handleViewSkOfficials = (skOfficialsIds, barangayId) => {
-    const barangay = barangays.find((b) => b.id === barangayId) || null;
-    setSelectedBarangay(barangay);
-    setSelectedSkOfficials(skOfficialsIds || []);
-    setIsViewSkModalOpen(true);
-  };
-
+  
   return (
     <div className={styles.barangayManagementPage}>
       <div className={styles.pageHeader}>
@@ -223,8 +228,8 @@ function BarangayManagement() {
         onDelete={handleRemoveBarangay}
         onEdit={handleEditBarangay}
         data={filtered}
+        tableType="barangay"
         skTable={false}
-        handleViewSkOfficials={handleViewSkOfficials}
         />
 
       
@@ -232,7 +237,7 @@ function BarangayManagement() {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSave={handleAddBarangaySave}
-        allSkOfficials={unassignedSkOfficials}
+        unassignedSkOfficials={unassignedSkOfficials}
       />
 
       <EditBarangayModal
@@ -244,13 +249,6 @@ function BarangayManagement() {
         onSave={handleEditBarangaySave}
         barangay={editingBarangay}
         unassignedSkOfficials={unassignedSkOfficials}
-      />
-
-      <ViewSkOfficialsModal
-        isOpen={isViewSkModalOpen}
-        onClose={() => setIsViewSkModalOpen(false)}
-        barangay={selectedBarangay}
-        skOfficialsId={selectedSkOfficials}
       />
 
       

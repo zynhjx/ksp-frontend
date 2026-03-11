@@ -71,6 +71,32 @@
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper .password {
+    width: 100%;
+    padding-right: 2.75rem;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 0.625rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.form-error {
+    color: #dc2626;
+    font-size: 0.875rem;
+    margin-top: -0.25rem;
+}
+
 .modal-actions {
     display: flex;
     justify-content: flex-end;

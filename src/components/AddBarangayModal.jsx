@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './AddEditBarangayModal.css';
 
-function AddBarangayModal({ isOpen, onClose, onSave, allSkOfficials = [] }) {
+function AddBarangayModal({ isOpen, onClose, onSave, unassignedSkOfficials = [] }) {
   const [name, setName] = useState('');
   const [status, setStatus] = useState('Active');
   const [selectedOfficials, setSelectedOfficials] = useState([]);
@@ -26,7 +26,7 @@ function AddBarangayModal({ isOpen, onClose, onSave, allSkOfficials = [] }) {
     e.preventDefault();
     setIsSaving(true);
     try {
-      await onSave({ name, status, skOfficials: selectedOfficials });
+      await onSave({ name, status, sk_officials: selectedOfficials });
     } finally {
       setIsSaving(false);
     }
@@ -71,8 +71,8 @@ function AddBarangayModal({ isOpen, onClose, onSave, allSkOfficials = [] }) {
           <div className="form-group">
             <label>SK Officials (Optional)</label>
             <div className="officials-list">
-              {allSkOfficials.length > 0 ? (
-                allSkOfficials.map((official) => (
+              {unassignedSkOfficials.length > 0 ? (
+                unassignedSkOfficials.map((official) => (
                   <div key={official.id} className="official-checkbox">
                     <input
                       type="checkbox"

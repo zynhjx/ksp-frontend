@@ -58,11 +58,11 @@
     font-weight: bold;
 }
 
-.table .status.green {
+.table .green {
     color: rgb(0, 121, 0);
 }
 
-.table .status.red {
+.table .red {
     color: rgb(240, 0, 0);
 }
 
@@ -70,6 +70,15 @@
     display: flex;
     justify-content: center;
     gap: 0.5rem;
+}
+
+.emptyText {
+    padding: 2rem 0;
+    margin: 0;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #6c757d;
 }
 
 .table .actions button {
@@ -90,6 +99,15 @@
 
 .editBtn:hover {
     background: #ffb300;
+}
+
+.viewBtn {
+    background: #28a745;
+    color: #fff;
+}
+
+.viewBtn:hover {
+    background: #218838;
 }
 
 .deleteBtn {

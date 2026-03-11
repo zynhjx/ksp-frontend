@@ -1,23 +1,55 @@
 
 import style from './Table.module.css'
 
-export default function Table({ data, skTable, handleViewSkOfficials, onEdit, onDelete, deleteLabel = 'Remove' }) {
+export default function Table({
+  data,
+  tableType,
+  onViewData,
+  onEdit,
+  onDelete,
+  deleteLabel = 'Remove'
+}) {
+
+  const resolvedType = tableType
+  const isSkTable = resolvedType === 'sk';
+  const isYouthTable = resolvedType === 'youth';
+  const rows = Array.isArray(data) ? data : [];
+
+  const getFullName = (row) => {
+    if (row.name) return row.name;
+    const firstName = row.firstName || row.first_name || '';
+    const lastName = row.lastName || row.last_name || '';
+    return `${firstName} ${lastName}`.trim();
+  };
 
     return (
         <div className={style.tableWrapper}>
+          {rows.length === 0 ? (
+            <p className={style.emptyText}>No items found.</p>
+          ) : (
+            <>
           {/* Desktop: Table View */}
           <table className={style.table} role="grid">
             <thead>
-              {skTable ?
-                  <tr>
-                      <th>Name</th>
-                      <th>Position</th>
-                      <th>Barangay</th>
-                      <th>Email</th>
-                      <th className={style.center}>Status</th>
-                      <th className={style.center}>Actions</th>
-                  </tr>
-                  : 
+        {isSkTable ?
+                <tr>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Barangay</th>
+                    <th>Email</th>
+                    <th className={style.center}>Status</th>
+                    <th className={style.center}>Actions</th>
+                </tr>
+          : isYouthTable ?
+              <tr>
+                <th>Name</th>
+                <th>Barangay</th>
+                <th>Email</th>
+                <th className={style.center}>Registered{}</th>
+                <th className={style.center}>Status</th>
+                <th className={style.center}>Actions</th>
+              </tr>
+          : 
                   <tr>
                       <th>Barangay Name</th>
                       <th className={style.center}>Active Youth</th>
@@ -29,43 +61,54 @@ export default function Table({ data, skTable, handleViewSkOfficials, onEdit, on
               
             </thead>
             <tbody>
-              {data.map((row) => (
+              {rows.map((row) => (
                 <tr
                   key={row.id}
                   className={style.tableRow}
                 >
-                  {skTable ?
+                  {isSkTable ?
                     <>
                         <td>{row.name}</td>
                         <td>{row.position}</td>
                         <td>{row.barangay || "None"}</td>
                         <td>{row.email}</td>
                     </>
+                    : isYouthTable ?
+                    <>
+                        <td>{getFullName(row)}</td>
+                        <td>{row.barangay || "-"}</td>
+                        <td>{row.email || '-'}</td>
+                        <td className={`${style.center} ${row.registered ? style.green : style.red }`}>{row.registered ? "Registered" : "Not Registered"}</td>
+                    </>
                     :
                     <>
                         <td>{row.name}</td>
                         <td className={style.center}>{row.active_youth}</td>
                         <td className={style.center}>{row.sk_officials?.length || 0}</td>
-                        {/* <button
-                                className={`${style.skCountBtn} ${style.center}`}
-                                onClick={() => {
-                                  handleViewSkOfficials(row.sk_officials || [], row.id)
-                                }}
-                                title="Click to view SK officials"
-                            >
-                                {(row.sk_officials || []).length}
-                            </button> */}
+                        
                     </>
                   }
                   <td className={`${style.status} ${style.center} ${row.status === "Active" ? style.green : style.red}`}>
                       {row.status}
                   </td>
                   <td className={style.actions}>
+                      {isYouthTable && (
+                        <button
+                          className={style.viewBtn}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onViewData?.(row);
+                          }}
+                        >
+                          View Profile
+                        </button>
+                      )}
+
+                      
                       <button
                         className={style.editBtn}
                         onClick={(e) => {
                           e.stopPropagation();
-                          console.log(row)
                           onEdit?.(row);
                         }}
                       >
@@ -89,13 +132,13 @@ export default function Table({ data, skTable, handleViewSkOfficials, onEdit, on
 
           {/* Mobile: Card View */}
           <div className={style.cardContainer} role="list">
-            {data.map((row) => (
+            {rows.map((row) => (
               <article 
                 key={row.id} 
                 className={style.card} 
                 role="listitem"
               >
-                {skTable ? (
+                {isSkTable ? (
                   <>
                     <div className={style.cardHeader}>
                       <h3 className={style.cardName}>{row.name}</h3>
@@ -118,6 +161,25 @@ export default function Table({ data, skTable, handleViewSkOfficials, onEdit, on
                       </div>
                     </div>
                   </>
+                ) : isYouthTable ? (
+                  <>
+                    <div className={style.cardHeader}>
+                      <h3 className={style.cardName}>{getFullName(row)}</h3>
+                      <span className={`${style.statusBadge} ${style[row.status?.toLowerCase()]}`}>
+                        {row.status}
+                      </span>
+                    </div>
+                    <div className={style.cardBody}>
+                      <div className={style.cardField}>
+                        <label className={style.fieldLabel}>Barangay</label>
+                        <p className={style.fieldValue}>{row.barangay || "None"}</p>
+                      </div>
+                      <div className={style.cardField}>
+                        <label className={style.fieldLabel}>Email</label>
+                        <p className={style.fieldValue}>{row.email || '-'}</p>
+                      </div>
+                    </div>
+                  </>
                 ) : (
                   <>
                     <div className={style.cardHeader}>
@@ -135,15 +197,8 @@ export default function Table({ data, skTable, handleViewSkOfficials, onEdit, on
                       <div className={style.cardField}>
                         <label className={style.fieldLabel}>SK Officials</label>
                         <p className={style.fieldValue}>
-                          <button
-                            className={style.skCountBtn}
-                            onClick={() => {
-                              handleViewSkOfficials(row.sk_officials || [], row.id)
-                            }}
-                            title="Click to view SK officials"
-                          >
-                            {(row.sk_officials || []).length}
-                          </button>
+                        
+                            {row.sk_officials?.length || 0}
                         </p>
                       </div>
                       <div className={style.cardField}>
@@ -155,6 +210,17 @@ export default function Table({ data, skTable, handleViewSkOfficials, onEdit, on
                 )}
                 
                   <div className={style.cardFooter}>
+                    {isYouthTable && (
+                      <button
+                        className={style.viewBtn}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onViewData?.(row);
+                        }}
+                      >
+                        View Data
+                      </button>
+                    )}
                     <button
                       className={style.editBtn}
                       onClick={(e) => {
@@ -168,7 +234,7 @@ export default function Table({ data, skTable, handleViewSkOfficials, onEdit, on
                       className={style.deleteBtn}
                       onClick={(e) => {
                         e.stopPropagation();
-                        onDelete?.(row.id);
+                        onDelete?.(row);
                       }}
                     >
                       {deleteLabel}
@@ -177,6 +243,8 @@ export default function Table({ data, skTable, handleViewSkOfficials, onEdit, on
               </article>
             ))}
           </div>
+            </>
+          )}
         </div>
     )
 }

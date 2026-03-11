@@ -14,6 +14,7 @@ import ReportsIcon from '../assets/icons/ReportsIcon';
 import ProgramsIcon from '../assets/icons/ProgramsIcon'
 import MyProfileIcon from '../assets/icons/MyProfileIcon';
 import AnnouncementsIcon from '../assets/icons/AnnouncementsIcon';
+import CalendarIcon from '../assets/icons/CalendarIcon';
 
 
 function Sidebar({ activePath }) {
@@ -76,10 +77,10 @@ function Sidebar({ activePath }) {
       return (
         [
           {title: "Dashboard", path: "/sk/dashboard", svg: <DashboardIcon />},
-          {title: "Youth Profiles", path: "/sk/sk-management", svg: "YouthProfilesIcon"},
-          {title: "Programs", path: "/sk/barangays", svg: "ProgramsIcon"},
+          {title: "Youth Profiles", path: "/sk/youth-profiles", svg: <SkManagementIcon />},
+          {title: "Programs", path: "/sk/barangays", svg: <CalendarIcon />},
           {title: "Reports", path: "/sk/reports", svg: <ReportsIcon />},
-          {title: "Announcements", path: "/sk/announcements", svg: "AnnouncementsIcon"}
+          {title: "Announcements", path: "/sk/announcements", svg: <AnnouncementsIcon />}
         ]
       )
     }
@@ -99,7 +100,7 @@ function Sidebar({ activePath }) {
       switch (user?.role) {
         case "Youth":
           return getYouthNavs()
-        case "Sk":
+        case "SK":
           return getSkNavs()
         case "Admin":
           return getAdminNavs()
