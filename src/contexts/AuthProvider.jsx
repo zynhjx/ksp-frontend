@@ -9,30 +9,27 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const init = async () => {
-      try {
-        const res = await apiFetch(`${apiUrl}/api/me`, {
-          credentials: "include"
-        });
+  const fetchUser = async () => {
+    try {
+      const res = await apiFetch(`${apiUrl}/api/me`, {
+        credentials: "include"
+      });
 
-        if (!res.ok) throw new Error();
+      if (!res.ok) throw new Error();
 
-        const data = await res.json();
-        login(data.user)
-      } catch {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+      const data = await res.json();
+      setUser(data.user);
 
-    init();
-  }, []);
-
-  const login = (userData) => {
-    setUser(userData);
+    } catch {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
   const logout = async () => {
     try {
@@ -57,7 +54,7 @@ export const AuthProvider = ({ children }) => {
   
   return (
     
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, fetchUser, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

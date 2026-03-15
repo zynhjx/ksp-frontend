@@ -1,0 +1,192 @@
+.page {
+  background: transparent;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: #e5e7eb;
+  border-radius: 8px;
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.title {
+  width: 250px;
+  height: 34px;
+}
+
+.subtitle {
+  width: 340px;
+  max-width: 70vw;
+  height: 18px;
+}
+
+.addBtn {
+  width: 170px;
+  height: 44px;
+  border-radius: 6px;
+}
+
+.controlsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  align-items: flex-start;
+}
+
+.searchBar {
+  flex: 1 1 280px;
+  min-width: 200px;
+  height: 46px;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.filter {
+  width: 150px;
+  height: 44px;
+  border-radius: 6px;
+}
+
+.tableWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tableHeader,
+.tableRow {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.th {
+  height: 20px;
+}
+
+.td {
+  height: 18px;
+}
+
+.tableRow {
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+@media (max-width: 1024px) {
+  .page {
+    padding: 1.5rem 1rem;
+  }
+
+  .pageHeader {
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+  }
+
+  .controlsRow {
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .searchBar {
+    flex: 1 100%;
+  }
+
+  .filters {
+    gap: 0.75rem;
+    flex: 1 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .pageHeader {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+  }
+
+  .addBtn {
+    width: 100%;
+  }
+
+  .tableHeader,
+  .tableRow {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .tableHeader .skeleton:nth-child(n + 4),
+  .tableRow .skeleton:nth-child(n + 4) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding: 0.75rem;
+  }
+
+  .title {
+    width: 180px;
+    height: 28px;
+  }
+
+  .subtitle {
+    width: 230px;
+    height: 16px;
+  }
+
+  .addBtn {
+    height: 40px;
+  }
+
+  .searchBar {
+    height: 40px;
+  }
+
+  .filter {
+    width: 120px;
+    height: 40px;
+  }
+}

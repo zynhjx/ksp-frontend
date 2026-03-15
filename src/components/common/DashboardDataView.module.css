@@ -1,0 +1,160 @@
+.dashboardStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+  width: 100%;
+}
+
+.dashboardStatCard {
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem 1.5rem;
+  text-align: center;
+}
+
+.dashboardStatCard h2 {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  margin: 0;
+  color: var(--accent-color, #007bff);
+}
+
+.dashboardStatCard p {
+  margin: 0.5rem 0 0;
+  color: #555;
+  font-size: clamp(0.9rem, 1.6vw, 1rem);
+}
+
+.dashboardGridContainer {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 1.25rem;
+  margin-top: 2.25rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+.dashboardChartCard {
+  grid-column: span 3;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem 1.5rem;
+  min-width: 0;
+}
+
+.dashboardChartTitle {
+  margin: 0 0 0.75rem;
+  color: var(--text-primary, #333);
+  font-size: clamp(1rem, 1.8vw, 1.1rem);
+  text-align: center;
+}
+
+.dashboardChartWrapper {
+  width: 100%;
+  max-width: 100%;
+  height: 18.75rem;
+  min-height: 16rem;
+}
+
+.dashboardEmptyChartBody {
+  width: 100%;
+  max-width: 100%;
+  height: 18.75rem;
+  min-height: 16rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #666;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+  .dashboardGridContainer {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+  }
+
+  .dashboardChartCard {
+    grid-column: span 3;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboardStatsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboardGridContainer {
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+    margin-top: 1.5rem;
+  }
+
+  .dashboardChartCard {
+    grid-column: span 1;
+  }
+
+  .dashboardChartWrapper {
+    height: 15rem;
+    min-height: 14rem;
+  }
+
+  .dashboardEmptyChartBody {
+    height: 15rem;
+    min-height: 14rem;
+  }
+}
+
+@media (max-width: 550px) {
+  .dashboardStatsGrid,
+  .dashboardGridContainer {
+    gap: 0.75rem;
+  }
+
+  .dashboardStatCard,
+  .dashboardChartCard {
+    padding: 0.75rem;
+  }
+
+  .dashboardChartTitle {
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .dashboardChartWrapper {
+    height: 13.5rem;
+    min-height: 12.5rem;
+  }
+
+  .dashboardEmptyChartBody {
+    height: 13.5rem;
+    min-height: 12.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboardStatCard {
+    padding: 0.875rem 1rem;
+  }
+
+  .dashboardChartCard {
+    padding: 0.875rem;
+  }
+
+  .dashboardChartWrapper {
+    height: 13.75rem;
+    min-height: 13rem;
+  }
+
+  .dashboardEmptyChartBody {
+    height: 13.75rem;
+    min-height: 13rem;
+  }
+}

@@ -1,0 +1,262 @@
+.youth-programs-page {
+  width: 100%;
+  margin: 0 auto;
+  padding: 28px 24px 36px;
+  box-sizing: border-box;
+}
+
+.youth-programs-header h1 {
+  margin: 0;
+  font-size: clamp(1.7rem, 2.2vw, 2.2rem);
+  line-height: 1.2;
+}
+
+.youth-programs-header p {
+  margin-top: 10px;
+  margin-bottom: 26px;
+  max-width: 720px;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.youth-programs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  align-items: stretch;
+  gap: 24px;
+}
+
+.program-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.filter-name {
+  flex: 1 1 320px;
+  min-width: 240px;
+}
+
+.filter-status,
+.filter-category,
+.filter-joined {
+  flex: 0 0 180px;
+  width: 180px;
+}
+
+.filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-field label {
+  font-size: 0.82rem;
+  color: #4b5563;
+  font-weight: 600;
+}
+
+.filter-field input,
+.filter-field select {
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #111827;
+  font-size: 0.9rem;
+  padding: 10px 12px;
+  outline: none;
+}
+
+.filter-field input:focus,
+.filter-field select:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 3px rgba(147, 197, 253, 0.25);
+}
+
+.program-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 18px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 10px 30px -22px rgba(15, 23, 42, 0.45);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.empty-filter-state {
+  width: 100%;
+  margin: 0;
+  padding: 18px;
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #4b5563;
+  text-align: center;
+}
+
+.program-card:hover {
+  transform: translateY(-2px);
+  border-color: #d1d5db;
+  box-shadow: 0 16px 34px -20px rgba(15, 23, 42, 0.42);
+}
+
+.program-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.program-card-top h2 {
+  margin: 0;
+  font-size: 1.12rem;
+  line-height: 1.35;
+  color: #111827;
+}
+
+.program-status {
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 4px 11px;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+.program-status.is-ongoing {
+  background: #ecfdf3;
+  color: #047857;
+  border-color: #bbf7d0;
+}
+
+.program-status.is-not-started {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.program-status.is-completed {
+  background: #f3f4f6;
+  color: #374151;
+  border-color: #e5e7eb;
+}
+
+.program-description {
+  margin: 0;
+  line-height: 1.58;
+  color: #4b5563;
+  min-height: 72px;
+}
+
+.program-meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.program-meta p {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.program-meta span {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.program-meta strong {
+  font-size: 0.9rem;
+  color: #111827;
+  font-weight: 600;
+}
+
+.program-footer {
+  margin-top: auto;
+  padding-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.program-countdown {
+  margin: 0;
+  flex: 1;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.program-countdown.is-ongoing {
+  color: #166534;
+}
+
+.program-countdown.is-not-started {
+  color: #1d4ed8;
+}
+
+.program-countdown.is-completed {
+  color: #374151;
+}
+
+.program-action-btn,
+.program-action-joined {
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  white-space: nowrap;
+  min-width: 86px;
+  text-align: center;
+}
+
+.program-action-btn {
+  border: 1px solid #14532d;
+  background: #166534;
+  color: #ffffff;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.program-action-btn:hover {
+  background: #14532d;
+}
+
+.program-action-btn:active {
+  transform: translateY(1px);
+}
+
+.program-action-joined {
+  border: 1px solid #bbf7d0;
+  background: #ecfdf3;
+  color: #166534;
+}
+
+@media (max-width: 640px) {
+  .youth-programs-page {
+    padding: 20px 14px 28px;
+  }
+
+  .program-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-name,
+  .filter-status,
+  .filter-category {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+}

@@ -1,0 +1,139 @@
+.dashboard-panel {
+    grid-column: span 3;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    background: #ffffff;
+    padding: 16px;
+    box-shadow: 0 10px 30px -22px rgba(15, 23, 42, 0.45);
+}
+
+.dashboard-profile-panel {
+    grid-column: span 12;
+}
+
+.dashboard-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.dashboard-panel-head h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: #111827;
+}
+
+.dashboard-panel-head a {
+    color: #166534;
+    font-size: 0.86rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.dashboard-panel-head a:hover {
+    text-decoration: underline;
+}
+
+.dashboard-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dashboard-list-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f9fafb;
+    padding: 10px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.dashboard-list-item p {
+    margin: 0;
+    color: #111827;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.dashboard-list-item span {
+    display: inline-block;
+    margin-top: 4px;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
+
+.dashboard-list-item strong {
+    font-size: 0.8rem;
+    white-space: nowrap;
+    color: #166534;
+}
+
+.dashboard-empty {
+    border: 1px dashed #d1d5db;
+    border-radius: 10px;
+    background: #ffffff;
+    padding: 14px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.88rem;
+}
+
+.dashboard-profile-details {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.dashboard-profile-details div {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f9fafb;
+    padding: 12px;
+}
+
+.dashboard-profile-details dt {
+    margin: 0;
+    color: #6b7280;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.dashboard-profile-details dd {
+    margin: 6px 0 0;
+    color: #111827;
+    font-size: 0.92rem;
+    font-weight: 700;
+}
+
+@media (max-width: 980px) {
+    .dashboard-panel {
+        grid-column: span 6;
+    }
+
+    .dashboard-profile-details {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .dashboard-panel {
+        grid-column: span 1;
+    }
+
+    .dashboard-list-item {
+        flex-direction: column;
+    }
+
+    .dashboard-list-item strong {
+        white-space: normal;
+    }
+}

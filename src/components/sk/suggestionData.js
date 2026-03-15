@@ -1,0 +1,62 @@
+export const CATEGORIES = [
+  'Education',
+  'Employment',
+  'Health',
+  'Sports',
+  'Environment',
+  'Community / Social',
+  'Other',
+];
+
+export const ACTIVE_STATUSES = ['Pending', 'Under Review', 'Accepted', 'Declined', 'Implemented'];
+
+export const SUGGESTIONS = [
+  {
+    id: 1,
+    title: 'Community Reading Corner for Youth',
+    category: 'Education',
+    description: 'Set up a reading corner with books and study tables for students.',
+    suggestedSolution: 'Coordinate with the barangay hall to allocate space and gather book donations.',
+    location: 'Barangay Hall',
+    status: 'Pending',
+    pinned: false,
+    submittedBy: 'Maria Santos',
+    submittedAt: '2026-03-01',
+  },
+  {
+    id: 2,
+    title: 'Weekend Basketball Skills Clinic',
+    category: 'Sports',
+    description: 'Organize weekly basketball clinics for teens and young adults.',
+    suggestedSolution: 'Partner with volunteer coaches and schedule sessions every Saturday morning.',
+    location: 'Barangay Covered Court',
+    status: 'Under Review',
+    pinned: false,
+    submittedBy: null,
+    submittedAt: '2026-02-26',
+  },
+  {
+    id: 3,
+    title: 'Tree Planting on Riverbank Area',
+    category: 'Environment',
+    description: 'Improve green coverage and reduce erosion in vulnerable riverbank zones.',
+    suggestedSolution: 'Coordinate with DENR and youth groups for monthly planting activities.',
+    location: 'Purok Riverside',
+    status: 'Implemented',
+    pinned: false,
+    submittedBy: 'Juan dela Cruz',
+    submittedAt: '2026-01-18',
+  },
+  {
+    id: 4,
+    title: 'Streetlight Repair in Youth Route',
+    category: 'Community / Social',
+    description: 'Install and repair streetlights along the path commonly used by youth after evening programs.',
+    suggestedSolution: 'Coordinate with the barangay engineering office for phased installation and maintenance.',
+    location: 'Rizal Street',
+    status: 'Archived',
+    pinned: false,
+    submittedBy: 'Arianne Reyes',
+    submittedAt: '2025-12-07',
+  },
+];

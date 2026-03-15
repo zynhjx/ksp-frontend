@@ -1,0 +1,121 @@
+.suggestionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(360px, 420px));
+  justify-content: start;
+  align-items: start;
+  gap: 24px;
+}
+
+.suggestionCard {
+  position: relative;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 18px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-shadow: 0 10px 30px -22px rgba(15, 23, 42, 0.45);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.suggestionCard:hover {
+  transform: translateY(-2px);
+  border-color: #d1d5db;
+  box-shadow: 0 16px 34px -20px rgba(15, 23, 42, 0.42);
+}
+
+.suggestionCardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.suggestionCardTop h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.35;
+  color: #111827;
+}
+
+.suggestionCategory {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 3px 11px;
+  border: 1px solid transparent;
+  letter-spacing: 0.02em;
+}
+
+.catEducation { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+.catEmployment { background: #fdf4ff; color: #7e22ce; border-color: #e9d5ff; }
+.catHealth { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
+.catSports { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+.catEnvironment { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+.catCommunity { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+.catOther { background: #f3f4f6; color: #374151; border-color: #e5e7eb; }
+
+.suggestionSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.suggestionSectionLabel {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.suggestionSectionBody {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.suggestionMeta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: auto;
+}
+
+.suggestionMeta p {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.suggestionMeta span {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.suggestionMeta strong {
+  font-size: 0.875rem;
+  color: #111827;
+  font-weight: 600;
+}
+
+.suggestionCredit {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #9ca3af;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 10px;
+}
+
+.suggestionCredit strong {
+  color: #6b7280;
+  font-weight: 600;
+}

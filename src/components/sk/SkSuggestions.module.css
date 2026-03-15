@@ -1,0 +1,248 @@
+.suggestionCardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.newBadge {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 0 14px 0 14px;
+  background: #dc2626;
+  color: #ffffff;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transform: translate(10%, -10%);
+}
+
+.suggestionCardTitle {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.35;
+  color: #111827;
+}
+
+.suggestionCategory {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 3px 11px;
+  border: 1px solid transparent;
+  letter-spacing: 0.02em;
+}
+
+.catEducation { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+.catEmployment { background: #fdf4ff; color: #7e22ce; border-color: #e9d5ff; }
+.catHealth { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
+.catSports { background: #f0fdf4; color: #166534; border-color: #bbf7d0; }
+.catEnvironment { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+.catCommunity { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+.catOther { background: #f3f4f6; color: #374151; border-color: #e5e7eb; }
+
+.suggestionSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.suggestionSectionLabel {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.suggestionSectionBody {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.suggestionMeta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 10px;
+  margin-top: auto;
+}
+
+.suggestionMeta p {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.suggestionMeta span {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.suggestionMeta strong {
+  font-size: 0.875rem;
+  color: #111827;
+  font-weight: 600;
+}
+
+.suggestionActions {
+  margin-top: 2px;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.suggestionActionButton,
+.suggestionActionButtonPrimary {
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 10px;
+  cursor: pointer;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  color: #374151;
+}
+
+.suggestionActionButton:hover {
+  background: #f9fafb;
+}
+
+.suggestionActionButtonPrimary {
+  background: #166534;
+  color: #fff;
+  border-color: #166534;
+}
+
+.suggestionActionButtonPrimary:hover {
+  background: #14532d;
+}
+
+.suggestionActionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.detailsModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.detailsModal {
+  width: min(640px, 100%);
+  max-height: calc(100vh - 48px);
+  overflow: auto;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 24px 60px -12px rgba(15, 23, 42, 0.35);
+}
+
+.detailsModalHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #ffffff;
+}
+
+.detailsModalHeader h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #111827;
+}
+
+.detailsModalCloseButton {
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 1rem;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.detailsModalCloseButton:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.detailsModalBody {
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.detailsModalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.detailsModalActionButton {
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 7px 12px;
+  cursor: pointer;
+}
+
+.detailsModalActionButton:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.detailsModalActionApprove {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #ffffff;
+}
+
+.detailsModalActionApprove:hover {
+  background: #115e59;
+}
+
+.detailsModalActionImplement {
+  background: #166534;
+  border-color: #166534;
+  color: #ffffff;
+}
+
+.detailsModalActionImplement:hover {
+  background: #14532d;
+}
+
+.detailsModalActionDecline {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  color: #ffffff;
+}
+
+.detailsModalActionDecline:hover {
+  background: #991b1b;
+}
