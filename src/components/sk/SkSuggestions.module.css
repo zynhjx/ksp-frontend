@@ -134,6 +134,17 @@
   cursor: not-allowed;
 }
 
+.likeActionButton {
+  background: var(--theme-blue);
+  border-color: var(--theme-blue);
+  color: #ffffff;
+}
+
+.likeActionButton:hover {
+  background: var(--blue-hover);
+  border-color: var(--blue-hover);
+}
+
 .detailsModalOverlay {
   position: fixed;
   inset: 0;
@@ -203,6 +214,25 @@
   margin-top: 4px;
 }
 
+.detailsModalActionsRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.detailsModalActionsRowOnlyLike {
+  justify-content: flex-end;
+}
+
+.detailsModalStatusActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
 .detailsModalActionButton {
   border: 1px solid transparent;
   border-radius: 8px;
@@ -215,6 +245,17 @@
 .detailsModalActionButton:disabled {
   opacity: 0.65;
   cursor: not-allowed;
+}
+
+.detailsModalActionLike {
+  background: var(--theme-blue);
+  border-color: var(--theme-blue);
+  color: #ffffff;
+}
+
+.detailsModalActionLike:hover {
+  background: var(--blue-hover);
+  border-color: var(--blue-hover);
 }
 
 .detailsModalActionApprove {

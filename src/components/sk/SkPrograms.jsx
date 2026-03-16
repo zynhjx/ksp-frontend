@@ -172,7 +172,7 @@ function SkPrograms() {
     <ManagementPageLayout
       title="Programs"
       subtitle="View and monitor barangay programs using program cards instead of a table."
-      showAddButton={permissionLevel > 3}
+      showAddButton={permissionLevel >= 2}
       addButtonLabel="+ Add Program"
       onAddButtonClick={handleOpenAddProgram}
       searchPlaceholder="Search by program name"

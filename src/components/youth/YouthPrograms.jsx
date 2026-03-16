@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import ProgramCard from '../common/ProgramCard'
 import cardStyles from '../common/ProgramCard.module.css'
+import ManagementPageLayout from '../common/ManagementPageLayout'
 import './YouthPrograms.css'
 
 const mockPrograms = [
@@ -88,7 +89,7 @@ function YouthPrograms() {
     )
   }
 
-  const categoryOptions = ['All', ...new Set(programs.map((program) => program.category))]
+  const categoryOptions = [...new Set(programs.map((program) => program.category))]
 
   const filteredPrograms = programs.filter((program) => {
     const matchesName = program.name.toLowerCase().includes(nameFilter.trim().toLowerCase())
@@ -101,68 +102,42 @@ function YouthPrograms() {
     return matchesName && matchesStatus && matchesCategory && matchesJoined
   })
 
+  const filters = (
+    <>
+      <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+        <option value="All">All Status</option>
+        <option value="Ongoing">Ongoing</option>
+        <option value="Not Started Yet">Not Started Yet</option>
+        <option value="Completed">Completed</option>
+      </select>
+
+      <select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)}>
+        <option value="">All Category</option>
+        {categoryOptions.map((category) => (
+          <option key={category} value={category}>
+            {category}
+          </option>
+        ))}
+      </select>
+
+      <select value={joinedFilter} onChange={(event) => setJoinedFilter(event.target.value)}>
+        <option value="All">All Participation</option>
+        <option value="Joined">Joined</option>
+        <option value="Not Joined">Not Joined</option>
+      </select>
+    </>
+  )
+
   return (
-    <div className="youth-programs-page">
-      <header className="youth-programs-header">
-        <h1>Programs</h1>
-        <p>Browse available youth programs and join activities that match your interests.</p>
-      </header>
-
-      <section className="program-filters" aria-label="Program filters">
-        <div className="filter-field filter-name">
-          <label htmlFor="filter-name">Name</label>
-          <input
-            id="filter-name"
-            type="text"
-            value={nameFilter}
-            onChange={(event) => setNameFilter(event.target.value)}
-            placeholder="Search by program name"
-          />
-        </div>
-
-        <div className="filter-field filter-status">
-          <label htmlFor="filter-status">Status</label>
-          <select
-            id="filter-status"
-            value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value)}
-          >
-            <option value="All">All</option>
-            <option value="Ongoing">Ongoing</option>
-            <option value="Not Started Yet">Not Started Yet</option>
-            <option value="Completed">Completed</option>
-          </select>
-        </div>
-
-        <div className="filter-field filter-category">
-          <label htmlFor="filter-category">Category</label>
-          <select
-            id="filter-category"
-            value={categoryFilter}
-            onChange={(event) => setCategoryFilter(event.target.value)}
-          >
-            {categoryOptions.map((category) => (
-              <option key={category} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="filter-field filter-joined">
-          <label htmlFor="filter-joined">Joined</label>
-          <select
-            id="filter-joined"
-            value={joinedFilter}
-            onChange={(event) => setJoinedFilter(event.target.value)}
-          >
-            <option value="All">All</option>
-            <option value="Joined">Joined</option>
-            <option value="Not Joined">Not Joined</option>
-          </select>
-        </div>
-      </section>
-
+    <ManagementPageLayout
+      title="Programs"
+      subtitle="Browse available youth programs and join activities that match your interests."
+      searchValue={nameFilter}
+      onSearchChange={(event) => setNameFilter(event.target.value)}
+      searchPlaceholder="Search by program name"
+      filters={filters}
+      showAddButton={false}
+    >
       {filteredPrograms.length ? (
         <section className={cardStyles.cardsGrid} aria-label="Programs list">
           {filteredPrograms.map((program) => (
@@ -178,7 +153,7 @@ function YouthPrograms() {
       ) : (
         <p className={cardStyles.emptyState}>No programs found for the selected filters.</p>
       )}
-    </div>
+    </ManagementPageLayout>
   )
 }
 

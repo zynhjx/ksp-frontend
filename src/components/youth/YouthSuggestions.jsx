@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import './YouthSuggestions.css'
 import SuggestionCard from '../common/SuggestionCard'
 import { suggestionCardsGridClassName } from '../common/suggestionCardClasses'
+import ManagementPageLayout from '../common/ManagementPageLayout'
+import { AuthContext } from '../../contexts/AuthContext'
 
 const CATEGORIES = [
   'Education',
@@ -58,9 +60,11 @@ const EMPTY_FORM = {
   description: '',
   suggestedSolution: '',
   location: '',
+  submitAnonymously: false,
 }
 
 function YouthSuggestions() {
+  const { user } = useContext(AuthContext)
   const [suggestions, setSuggestions] = useState(mockSuggestions)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [form, setForm] = useState(EMPTY_FORM)
@@ -76,9 +80,17 @@ function YouthSuggestions() {
     setIsModalOpen(false)
   }
 
+  const getSubmitterName = () => {
+    const firstName = user?.first_name || user?.firstName || ''
+    const lastName = user?.last_name || user?.lastName || ''
+    const fullName = `${firstName} ${lastName}`.trim()
+    return fullName || user?.name || user?.username || 'User'
+  }
+
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
+    const { name, value, type, checked } = e.target
+    const fieldValue = type === 'checkbox' ? checked : value
+    setForm((prev) => ({ ...prev, [name]: fieldValue }))
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }))
     }
@@ -110,6 +122,7 @@ function YouthSuggestions() {
       suggestedSolution: form.suggestedSolution.trim(),
       location: form.location.trim(),
       status: 'Pending',
+      submittedBy: !form.submitAnonymously ? getSubmitterName() : null,
       submittedAt: new Date().toISOString().split('T')[0],
     }
 
@@ -122,17 +135,13 @@ function YouthSuggestions() {
   }
 
   return (
-    <div className="suggestions-page">
-      <header className="suggestions-header">
-        <div className="suggestions-header-text">
-          <h1>My Suggestions</h1>
-          <p>Share your ideas and feedback to help improve programs and services in your barangay.</p>
-        </div>
-        <button type="button" className="new-suggestion-btn" onClick={openModal}>
-          + New Suggestion
-        </button>
-      </header>
-
+    <ManagementPageLayout
+      title="My Suggestions"
+      subtitle="Share your ideas and feedback to help improve programs and services in your barangay."
+      addButtonLabel="+ New Suggestion"
+      onAddButtonClick={openModal}
+      showSearch={false}
+    >
       {suggestions.length === 0 ? (
         <div className="suggestions-empty">
           <p>You haven&apos;t submitted any suggestions yet.</p>
@@ -234,6 +243,19 @@ function YouthSuggestions() {
                 {errors.location && <span className="field-error">{errors.location}</span>}
               </div>
 
+              <div className="form-checkbox-field">
+                <label htmlFor="sug-submit-anonymously" className="checkbox-label">
+                  <input
+                    id="sug-submit-anonymously"
+                    name="submitAnonymously"
+                    type="checkbox"
+                    checked={form.submitAnonymously}
+                    onChange={handleChange}
+                  />
+                  <span>Submit anonymously</span>
+                </label>
+              </div>
+
               <div className="modal-actions">
                 <button type="button" className="modal-cancel-btn" onClick={closeModal}>
                   Cancel
@@ -246,7 +268,7 @@ function YouthSuggestions() {
           </div>
         </div>
       )}
-    </div>
+    </ManagementPageLayout>
   )
 }
 

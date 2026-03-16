@@ -24,9 +24,20 @@ const getCategoryClass = (category) => {
   return styles.catOther;
 };
 
-function SkSuggestionCard({ suggestion, isNew, onTogglePin, onArchive, onView, permissionLevel }) {
+function SkSuggestionCard({ suggestion, isNew, onTogglePin, onArchive, onToggleLike, onOpenDetails, permissionLevel }) {
   return (
-    <article className={cardStyles.suggestionCard}>
+    <article
+      className={cardStyles.suggestionCard}
+      role="button"
+      tabIndex={0}
+      onClick={onOpenDetails}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          onOpenDetails();
+        }
+      }}
+    >
         {isNew && <span className={styles.newBadge}>New</span>}
         <div className={styles.suggestionCardTop}>
           <h2 className={styles.suggestionCardTitle}>{suggestion.title}</h2>
@@ -41,24 +52,42 @@ function SkSuggestionCard({ suggestion, isNew, onTogglePin, onArchive, onView, p
       </div>
 
       <div className={styles.suggestionActions}>
-        {permissionLevel > 3 ? (
+        <button
+          type="button"
+          className={`${styles.suggestionActionButton} ${styles.likeActionButton}`}
+          onClick={(event) => {
+            event.stopPropagation();
+            onToggleLike();
+          }}
+        >
+          {suggestion.likedByCurrentOfficial ? 'Unlike' : 'Like'} ({suggestion.likesCount || 0})
+        </button>
+
+        {permissionLevel >= 2 ? (
           <>
-            <button type="button" className={styles.suggestionActionButton} onClick={onTogglePin}>
+            <button
+              type="button"
+              className={styles.suggestionActionButton}
+              onClick={(event) => {
+                event.stopPropagation();
+                onTogglePin();
+              }}
+            >
               {suggestion.pinned ? 'Unpin' : 'Pin'}
             </button>
             <button
               type="button"
               className={styles.suggestionActionButton}
-              onClick={onArchive}
+              onClick={(event) => {
+                event.stopPropagation();
+                onArchive();
+              }}
               disabled={suggestion.status === 'Archived'}
             >
               {suggestion.status === 'Archived' ? 'Archived' : 'Archive'}
             </button>
           </>
         ) : null}
-        <button type="button" className={styles.suggestionActionButtonPrimary} onClick={onView}>
-          View
-        </button>
       </div>
     </article>
   );
@@ -66,7 +95,13 @@ function SkSuggestionCard({ suggestion, isNew, onTogglePin, onArchive, onView, p
 
 function SkSuggestions() {
   const { user } = useContext(AuthContext);
-  const [suggestions, setSuggestions] = useState(SUGGESTIONS);
+  const [suggestions, setSuggestions] = useState(
+    SUGGESTIONS.map((suggestion) => ({
+      ...suggestion,
+      likesCount: suggestion.likesCount || 0,
+      likedByCurrentOfficial: false,
+    }))
+  );
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -75,21 +110,26 @@ function SkSuggestions() {
   const permissionLevel = user?.permissionLevel ?? 0;
 
   const handleCloseModal = () => {
-    if (selectedSuggestionId !== null && !viewedIds.has(selectedSuggestionId)) {
-      setSuggestions((prev) =>
-        prev.map((suggestion) =>
-          suggestion.id === selectedSuggestionId && suggestion.status === 'Pending'
-            ? { ...suggestion, status: 'Under Review' }
-            : suggestion
-        )
-      );
-      setViewedIds((prev) => new Set([...prev, selectedSuggestionId]));
-    }
     setSelectedSuggestionId(null);
   };
 
+  const handleOpenSuggestionDetails = (suggestionId) => {
+    setSelectedSuggestionId(suggestionId);
+
+    if (viewedIds.has(suggestionId)) return;
+
+    setSuggestions((prev) =>
+      prev.map((suggestion) =>
+        suggestion.id === suggestionId && suggestion.status === 'Pending'
+          ? { ...suggestion, status: 'Under Review' }
+          : suggestion
+      )
+    );
+    setViewedIds((prev) => new Set([...prev, suggestionId]));
+  };
+
   const handleTogglePin = (suggestionId) => {
-    if (permissionLevel <= 3) return;
+    if (permissionLevel < 2) return;
     setSuggestions((prev) =>
       prev.map((suggestion) =>
         suggestion.id === suggestionId ? { ...suggestion, pinned: !suggestion.pinned } : suggestion
@@ -98,7 +138,7 @@ function SkSuggestions() {
   };
 
   const handleArchive = (suggestionId) => {
-    if (permissionLevel <= 3) return;
+    if (permissionLevel < 2) return;
     setSuggestions((prev) =>
       prev.map((suggestion) =>
         suggestion.id === suggestionId ? { ...suggestion, status: 'Archived' } : suggestion
@@ -106,8 +146,28 @@ function SkSuggestions() {
     );
   };
 
+  const handleToggleLike = (suggestionId) => {
+    setSuggestions((prev) =>
+      prev.map((suggestion) => {
+        if (suggestion.id !== suggestionId) return suggestion;
+
+        const isCurrentlyLiked = Boolean(suggestion.likedByCurrentOfficial);
+        const currentLikesCount = Number(suggestion.likesCount || 0);
+        const nextLikesCount = isCurrentlyLiked
+          ? Math.max(0, currentLikesCount - 1)
+          : currentLikesCount + 1;
+
+        return {
+          ...suggestion,
+          likedByCurrentOfficial: !isCurrentlyLiked,
+          likesCount: nextLikesCount,
+        };
+      })
+    );
+  };
+
   const handleModalStatusChange = (nextStatus) => {
-    if (permissionLevel <= 3 || selectedSuggestionId === null) return;
+    if (permissionLevel < 3 || selectedSuggestionId === null) return;
 
     setSuggestions((prev) =>
       prev.map((suggestion) =>
@@ -172,7 +232,8 @@ function SkSuggestions() {
               suggestion={suggestion}
               permissionLevel={permissionLevel}
               isNew={!viewedIds.has(suggestion.id) && suggestion.status === 'Pending'}
-              onView={() => setSelectedSuggestionId(suggestion.id)}
+              onOpenDetails={() => handleOpenSuggestionDetails(suggestion.id)}
+              onToggleLike={() => handleToggleLike(suggestion.id)}
               onTogglePin={() => handleTogglePin(suggestion.id)}
               onArchive={() => handleArchive(suggestion.id)}
             />
@@ -240,34 +301,48 @@ function SkSuggestions() {
                 Submitted by <strong>{selectedSuggestion.submittedBy ?? 'Unknown'}</strong>
               </p>
 
-              {permissionLevel > 3 ? (
-                <div className={styles.detailsModalActions}>
-                  <button
-                    type="button"
-                    className={`${styles.detailsModalActionButton} ${styles.detailsModalActionApprove}`}
-                    onClick={() => handleModalStatusChange('Accepted')}
-                    disabled={selectedSuggestion.status === 'Accepted'}
-                  >
-                    Approve
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.detailsModalActionButton} ${styles.detailsModalActionImplement}`}
-                    onClick={() => handleModalStatusChange('Implemented')}
-                    disabled={selectedSuggestion.status === 'Implemented'}
-                  >
-                    Implement
-                  </button>
-                  <button
-                    type="button"
-                    className={`${styles.detailsModalActionButton} ${styles.detailsModalActionDecline}`}
-                    onClick={() => handleModalStatusChange('Declined')}
-                    disabled={selectedSuggestion.status === 'Declined'}
-                  >
-                    Decline
-                  </button>
-                </div>
-              ) : null}
+              <div
+                className={`${styles.detailsModalActionsRow} ${
+                  permissionLevel >= 3 ? '' : styles.detailsModalActionsRowOnlyLike
+                }`}
+              >
+                <button
+                  type="button"
+                  className={`${styles.detailsModalActionButton} ${styles.detailsModalActionLike}`}
+                  onClick={() => handleToggleLike(selectedSuggestion.id)}
+                >
+                  {selectedSuggestion.likedByCurrentOfficial ? 'Unlike' : 'Like'} ({selectedSuggestion.likesCount || 0})
+                </button>
+
+                {permissionLevel >= 3 ? (
+                  <div className={styles.detailsModalStatusActions}>
+                    <button
+                      type="button"
+                      className={`${styles.detailsModalActionButton} ${styles.detailsModalActionApprove}`}
+                      onClick={() => handleModalStatusChange('Accepted')}
+                      disabled={selectedSuggestion.status === 'Accepted'}
+                    >
+                      Approve
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.detailsModalActionButton} ${styles.detailsModalActionImplement}`}
+                      onClick={() => handleModalStatusChange('Implemented')}
+                      disabled={selectedSuggestion.status === 'Implemented'}
+                    >
+                      Implement
+                    </button>
+                    <button
+                      type="button"
+                      className={`${styles.detailsModalActionButton} ${styles.detailsModalActionDecline}`}
+                      onClick={() => handleModalStatusChange('Declined')}
+                      disabled={selectedSuggestion.status === 'Declined'}
+                    >
+                      Decline
+                    </button>
+                  </div>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>

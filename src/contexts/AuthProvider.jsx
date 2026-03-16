@@ -33,20 +33,31 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      const res = await fetch(`${apiUrl}/api/logout`, {
+      const res = await apiFetch(`${apiUrl}/api/logout`, {
         method: "POST",
         credentials: "include",
       });
 
       if (!res.ok) {
-        throw new Error("Logout failed");
+        let message = "Logout failed";
+
+        try {
+          const data = await res.json();
+          message = data?.message || message;
+        } catch {
+          message = "Logout failed";
+        }
+
+        throw new Error(message);
       }
       
-      setUser(null)
+      setUser(null);
       toast.success("Successfully logged out!");
+      return true;
 
     } catch (err) {
-      toast.error(err.error)      
+      toast.error(err?.message || "Logout failed");
+      return false;
     }
   };
 

@@ -12,39 +12,34 @@ const MOCK_YOUTH_PROFILES = [
     name: 'Alyssa Mae Santos',
     barangay: 'San Isidro',
     email: 'alyssa.santos@example.com',
-    registered: true,
     status: 'Active',
   },
   {
     id: 2,
     name: 'Renz Carl Dela Cruz',
-    barangay: 'San Roque',
+    barangay: 'San Isidro',
     email: 'renz.delacruz@example.com',
-    registered: true,
     status: 'Active',
   },
   {
     id: 3,
     name: 'Mikaela Joy Reyes',
-    barangay: 'Mabini',
+    barangay: 'San Isidro',
     email: 'mikaela.reyes@example.com',
-    registered: false,
     status: 'Inactive',
   },
   {
     id: 4,
     name: 'Joshua Paolo Garcia',
-    barangay: null,
+    barangay: 'San Isidro',
     email: 'joshua.garcia@example.com',
-    registered: false,
     status: 'Active',
   },
   {
     id: 5,
     name: 'Trisha Anne Villanueva',
-    barangay: 'Rizal',
+    barangay: 'San Isidro',
     email: 'trisha.villanueva@example.com',
-    registered: true,
     status: 'Inactive',
   },
 ];
@@ -52,11 +47,12 @@ const MOCK_YOUTH_PROFILES = [
 function SkYouthProfiles() {
   const { user } = useContext(AuthContext);
   const [search, setSearch] = useState('');
-  const [filterBarangay, setFilterBarangay] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [youthList, setYouthList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+
+  const currentBarangay = user?.barangay || user?.barangay_name || user?.barangayName || user?.barangay?.name || 'San Isidro';
 
   const fetchYouths = useCallback(async () => {
     setLoading(true);
@@ -83,14 +79,6 @@ function SkYouthProfiles() {
     fetchYouths();
   }, [fetchYouths]);
 
-  const barangays = useMemo(
-    () =>
-      [...new Set(youthList.map((youth) => youth?.barangay).filter(Boolean))].sort((a, b) =>
-        a.localeCompare(b)
-      ),
-    [youthList]
-  );
-
   const filtered = useMemo(
     () =>
       youthList.filter((youth) => {
@@ -101,15 +89,11 @@ function SkYouthProfiles() {
           name.toLowerCase().includes(search.toLowerCase()) ||
           email.toLowerCase().includes(search.toLowerCase());
 
-        const matchesBarangay =
-          !filterBarangay ||
-          (filterBarangay === 'null' ? youth.barangay === null : youth.barangay === filterBarangay);
-
         const matchesStatus = !filterStatus || youth.status === filterStatus;
 
-        return matchesSearch && matchesBarangay && matchesStatus;
+        return matchesSearch && matchesStatus;
       }),
-    [youthList, search, filterBarangay, filterStatus]
+    [youthList, search, filterStatus]
   );
 
   const handleSearchChange = (event) => setSearch(event.target.value);
@@ -132,23 +116,13 @@ function SkYouthProfiles() {
   return (
     <ManagementPageLayout
       title="Youth Profiles"
-      subtitle="View and filter youth profiles for your barangay"
+      subtitle={`View registered youth profiles for ${currentBarangay}`}
       showAddButton={false}
       searchPlaceholder="Search by name or email"
       searchValue={search}
       onSearchChange={handleSearchChange}
       filters={(
         <>
-          <select value={filterBarangay} onChange={(event) => setFilterBarangay(event.target.value)}>
-            <option value="">All Barangays</option>
-            {barangays.map((barangay) => (
-              <option key={barangay} value={barangay}>
-                {barangay}
-              </option>
-            ))}
-            <option value="null">None</option>
-          </select>
-
           <select value={filterStatus} onChange={(event) => setFilterStatus(event.target.value)}>
             <option value="">All Status</option>
             <option value="Active">Active</option>
@@ -160,6 +134,10 @@ function SkYouthProfiles() {
       <Table
         data={filtered}
         tableType="youth"
+        youthTableOptions={{
+          showBarangay: false,
+          showRegistered: false,
+        }}
         onViewData={handleViewData}
         onEdit={handleEdit}
         onDelete={handleDelete}

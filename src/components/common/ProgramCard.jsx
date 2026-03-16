@@ -69,8 +69,9 @@ function ProgramCard({
         <p><span>Category</span><strong>{program.category}</strong></p>
         <p><span>Location</span><strong>{program.location}</strong></p>
         <p><span>Created</span><strong>{formatDate(program.createdAt)}</strong></p>
-        <p><span>Until</span><strong>{formatDate(program.untilDate)}</strong></p>
         <p><span>Participants</span><strong>{program.participants}</strong></p>
+        <p><span>Start</span><strong>{formatDate(program.startDate)}</strong></p>
+        <p><span>Until</span><strong>{formatDate(program.untilDate)}</strong></p>
       </div>
 
       <div className={styles.footer}>

@@ -331,6 +331,25 @@
   color: #dc2626;
 }
 
+.form-checkbox-field {
+  margin-top: -2px;
+}
+
+.checkbox-label {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 10px;
+  color: #374151;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.checkbox-label input[type='checkbox'] {
+  accent-color: #166534;
+  cursor: pointer;
+}
+
 /* ── Modal action buttons ────────────────────────────────────────────────── */
 .modal-actions {
   display: flex;
