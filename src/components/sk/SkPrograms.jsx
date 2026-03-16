@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import ManagementPageLayout from '../common/ManagementPageLayout'
 import ProgramCard from '../common/ProgramCard'
 import cardStyles from '../common/ProgramCard.module.css'
+import styles from './SkPrograms.module.css'
+import { AuthContext } from '../../contexts/AuthContext'
 
 const skPrograms = [
   {
@@ -58,12 +60,37 @@ const skPrograms = [
   },
 ]
 
+const initialProgramForm = {
+  name: '',
+  category: '',
+  location: '',
+  description: '',
+  startDate: '',
+  startTime: '',
+  untilDate: '',
+  untilTime: '',
+}
+
+const getProgramStatus = (startDateTime, untilDateTime) => {
+  const now = Date.now()
+  const startTime = new Date(startDateTime).getTime()
+  const untilTime = new Date(untilDateTime).getTime()
+
+  if (now < startTime) return 'Not Started Yet'
+  if (now <= untilTime) return 'Ongoing'
+  return 'Completed'
+}
+
 function SkPrograms() {
-  const [programs] = useState(skPrograms)
+  const { user } = useContext(AuthContext)
+  const [programs, setPrograms] = useState(skPrograms)
   const [now, setNow] = useState(() => Date.now())
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
+  const [isAddProgramOpen, setIsAddProgramOpen] = useState(false)
+  const [programForm, setProgramForm] = useState(initialProgramForm)
+  const permissionLevel = user?.permissionLevel ?? 0
 
   useEffect(() => {
     const timerId = setInterval(() => {
@@ -83,12 +110,71 @@ function SkPrograms() {
     return matchesSearch && matchesStatus && matchesCategory
   })
 
+  const handleOpenAddProgram = () => {
+    if (permissionLevel <= 3) return
+    setProgramForm(initialProgramForm)
+    setIsAddProgramOpen(true)
+  }
+
+  const handleCloseAddProgram = () => {
+    setIsAddProgramOpen(false)
+    setProgramForm(initialProgramForm)
+  }
+
+  const handleProgramFormChange = (event) => {
+    const { name, value } = event.target
+    setProgramForm((previous) => ({
+      ...previous,
+      [name]: value,
+    }))
+  }
+
+  const handleAddProgram = (event) => {
+    event.preventDefault()
+    if (permissionLevel <= 3) return
+
+    const startDateTime = `${programForm.startDate}T${programForm.startTime}:00`
+    const untilDateTime = `${programForm.untilDate}T${programForm.untilTime}:00`
+    const startTime = new Date(startDateTime).getTime()
+    const untilTime = new Date(untilDateTime).getTime()
+
+    if (Number.isNaN(startTime) || Number.isNaN(untilTime) || untilTime < startTime) {
+      return
+    }
+
+    const nextId = programs.length ? Math.max(...programs.map((program) => program.id)) + 1 : 1
+    const createdAt = new Date().toISOString().slice(0, 10)
+    const status = getProgramStatus(startDateTime, untilDateTime)
+
+    const newProgram = {
+      id: nextId,
+      name: programForm.name.trim(),
+      category: programForm.category.trim(),
+      location: programForm.location.trim(),
+      description: programForm.description.trim(),
+      createdAt,
+      startDate: startDateTime,
+      untilDate: untilDateTime,
+      participants: 0,
+      status,
+      joined: false,
+    }
+
+    setPrograms((previous) => [newProgram, ...previous])
+    setSearch('')
+    setStatusFilter('')
+    setCategoryFilter('')
+    setNow(Date.now())
+    handleCloseAddProgram()
+  }
+
   return (
     <ManagementPageLayout
       title="Programs"
       subtitle="View and monitor barangay programs using program cards instead of a table."
-      showAddButton
+      showAddButton={permissionLevel > 3}
       addButtonLabel="+ Add Program"
+      onAddButtonClick={handleOpenAddProgram}
       searchPlaceholder="Search by program name"
       searchValue={search}
       onSearchChange={(event) => setSearch(event.target.value)}
@@ -125,6 +211,134 @@ function SkPrograms() {
       ) : (
         <p className={cardStyles.emptyState}>No programs found for the selected filters.</p>
       )}
+
+      {isAddProgramOpen ? (
+        <div className={styles.modalOverlay} onClick={handleCloseAddProgram}>
+          <div className={styles.modalContainer} onClick={(event) => event.stopPropagation()}>
+            <h2>Add Program</h2>
+            <p className={styles.modalSubtitle}>Create a new youth program to show in this list.</p>
+
+            <form className={styles.modalForm} onSubmit={handleAddProgram}>
+              <div className={styles.fieldGroup}>
+                <label htmlFor="program-name">Program Name</label>
+                <input
+                  id="program-name"
+                  name="name"
+                  type="text"
+                  placeholder="Enter program name"
+                  value={programForm.name}
+                  onChange={handleProgramFormChange}
+                  required
+                />
+              </div>
+
+              <div className={styles.twoColumn}>
+                <div className={styles.fieldGroup}>
+                  <label htmlFor="program-category">Category</label>
+                  <input
+                    id="program-category"
+                    name="category"
+                    type="text"
+                    placeholder="e.g. Education"
+                    value={programForm.category}
+                    onChange={handleProgramFormChange}
+                    required
+                  />
+                </div>
+
+                <div className={styles.fieldGroup}>
+                  <label htmlFor="program-location">Location</label>
+                  <input
+                    id="program-location"
+                    name="location"
+                    type="text"
+                    placeholder="Enter venue or location"
+                    value={programForm.location}
+                    onChange={handleProgramFormChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className={styles.fieldGroup}>
+                <label htmlFor="program-description">Description</label>
+                <textarea
+                  id="program-description"
+                  name="description"
+                  rows={4}
+                  placeholder="Write a short description of the program"
+                  value={programForm.description}
+                  onChange={handleProgramFormChange}
+                  required
+                />
+              </div>
+
+              <div className={styles.twoColumn}>
+                <div className={styles.fieldGroup}>
+                  <label htmlFor="program-start-date">Start Date</label>
+                  <input
+                    id="program-start-date"
+                    name="startDate"
+                    type="date"
+                    value={programForm.startDate}
+                    onChange={handleProgramFormChange}
+                    required
+                  />
+                </div>
+
+                <div className={styles.fieldGroup}>
+                  <label htmlFor="program-start-time">Start Time</label>
+                  <input
+                    id="program-start-time"
+                    name="startTime"
+                    type="time"
+                    value={programForm.startTime}
+                    onChange={handleProgramFormChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className={styles.twoColumn}>
+                <div className={styles.fieldGroup}>
+                  <label htmlFor="program-until-date">Until Date</label>
+                  <input
+                    id="program-until-date"
+                    name="untilDate"
+                    type="date"
+                    value={programForm.untilDate}
+                    onChange={handleProgramFormChange}
+                    required
+                  />
+                </div>
+
+                <div className={styles.fieldGroup}>
+                  <label htmlFor="program-until-time">Until Time</label>
+                  <input
+                    id="program-until-time"
+                    name="untilTime"
+                    type="time"
+                    value={programForm.untilTime}
+                    onChange={handleProgramFormChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <p className={styles.modalHint}>Status is set automatically based on start and until date/time.</p>
+
+              <div className={styles.modalActions}>
+                <button type="button" className={styles.cancelBtn} onClick={handleCloseAddProgram}>
+                  Cancel
+                </button>
+                <button type="submit" className={styles.saveBtn}>
+                  Add Program
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
     </ManagementPageLayout>
   )
 }

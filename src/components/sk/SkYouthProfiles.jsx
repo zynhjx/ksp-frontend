@@ -1,13 +1,56 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback, useContext } from 'react';
 import Table from '../common/Table';
 import { toast } from 'react-toastify';
-import { apiFetch } from '../../api';
 import PageError from '../common/PageError';
 import ManagementPageLayout from '../common/ManagementPageLayout';
 import ManagementPageSkeleton from '../common/ManagementPageSkeleton';
+import { AuthContext } from '../../contexts/AuthContext';
+
+const MOCK_YOUTH_PROFILES = [
+  {
+    id: 1,
+    name: 'Alyssa Mae Santos',
+    barangay: 'San Isidro',
+    email: 'alyssa.santos@example.com',
+    registered: true,
+    status: 'Active',
+  },
+  {
+    id: 2,
+    name: 'Renz Carl Dela Cruz',
+    barangay: 'San Roque',
+    email: 'renz.delacruz@example.com',
+    registered: true,
+    status: 'Active',
+  },
+  {
+    id: 3,
+    name: 'Mikaela Joy Reyes',
+    barangay: 'Mabini',
+    email: 'mikaela.reyes@example.com',
+    registered: false,
+    status: 'Inactive',
+  },
+  {
+    id: 4,
+    name: 'Joshua Paolo Garcia',
+    barangay: null,
+    email: 'joshua.garcia@example.com',
+    registered: false,
+    status: 'Active',
+  },
+  {
+    id: 5,
+    name: 'Trisha Anne Villanueva',
+    barangay: 'Rizal',
+    email: 'trisha.villanueva@example.com',
+    registered: true,
+    status: 'Inactive',
+  },
+];
 
 function SkYouthProfiles() {
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const { user } = useContext(AuthContext);
   const [search, setSearch] = useState('');
   const [filterBarangay, setFilterBarangay] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
@@ -20,13 +63,13 @@ function SkYouthProfiles() {
     setIsError(false);
 
     try {
-      const res = await apiFetch(`${apiUrl}/api/sk/youths`);
-      if (!res.ok) {
-        throw new Error('Failed to fetch youth profiles');
-      }
-
-      const data = await res.json();
-      setYouthList(Array.isArray(data) ? data : []);
+      // const res = await apiFetch(`${apiUrl}/api/sk/youths`);
+      // if (!res.ok) {
+      //   throw new Error('Failed to fetch youth profiles');
+      // }
+      // const data = await res.json();
+      // setYouthList(Array.isArray(data) ? data : []);
+      setYouthList(MOCK_YOUTH_PROFILES);
     } catch (err) {
       console.error(err);
       setYouthList([]);
@@ -34,7 +77,7 @@ function SkYouthProfiles() {
     } finally {
       setLoading(false);
     }
-  }, [apiUrl]);
+  }, []);
 
   useEffect(() => {
     fetchYouths();
@@ -121,6 +164,7 @@ function SkYouthProfiles() {
         onEdit={handleEdit}
         onDelete={handleDelete}
         deleteLabel="Remove"
+        permissionLevel={user.permissionLevel}
       />
     </ManagementPageLayout>
   );

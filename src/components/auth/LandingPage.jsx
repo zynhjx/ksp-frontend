@@ -3,7 +3,7 @@ import "./LandingPage.css";
 import { useContext } from "react";
 import { AuthContext } from "../../contexts/AuthContext";
 import LoadingSpinner from "../common/LoadingSpinner";
-import Logo from '../../assets/pngs/kspLogoWithName.png'
+import Logo from '../../assets/logo/dark-theme-logo.svg'
 
 const Landing = () => {
     const {user, loading} = useContext(AuthContext)

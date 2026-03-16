@@ -1,8 +1,7 @@
 import { useContext, useEffect, useState, useRef } from 'react'
 import { Link, useLocation } from "react-router-dom";
 import './Sidebar.css'
-import Logo from "../../assets/pngs/kspLogoWithName.png"
-import LogoName from "../../assets/pngs/ksp-name.png"
+import LogoName from "../../assets/logo/white-theme-logo.svg"
 import { SidebarContext } from '../../contexts/SidebarContext';
 import { AuthContext } from '../../contexts/AuthContext';
 import { Lightbulb } from 'lucide-react';

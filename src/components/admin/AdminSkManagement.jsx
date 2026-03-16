@@ -315,7 +315,7 @@ function AdminSkManagement() {
         tableType="sk"
         skTable={true}
         handleRowClick={handleRowClick}
-        hasActions={true}
+        permissionLevel={4}
         onEdit={handleEditClick}
         onDelete={handleDeleteClick}
         deleteLabel="Delete"

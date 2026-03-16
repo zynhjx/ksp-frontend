@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import ManagementPageLayout from '../common/ManagementPageLayout';
 import { suggestionCardsGridClassName } from '../common/suggestionCardClasses';
 import cardStyles from '../common/SuggestionCard.module.css';
 import styles from './SkSuggestions.module.css';
 import { ACTIVE_STATUSES, CATEGORIES, SUGGESTIONS } from './suggestionData';
+import { AuthContext } from '../../contexts/AuthContext';
 
 const formatDate = (value) =>
   new Date(value).toLocaleDateString('en-PH', {
@@ -23,7 +24,7 @@ const getCategoryClass = (category) => {
   return styles.catOther;
 };
 
-function SkSuggestionCard({ suggestion, isNew, onTogglePin, onArchive, onView }) {
+function SkSuggestionCard({ suggestion, isNew, onTogglePin, onArchive, onView, permissionLevel }) {
   return (
     <article className={cardStyles.suggestionCard}>
         {isNew && <span className={styles.newBadge}>New</span>}
@@ -40,17 +41,21 @@ function SkSuggestionCard({ suggestion, isNew, onTogglePin, onArchive, onView })
       </div>
 
       <div className={styles.suggestionActions}>
-        <button type="button" className={styles.suggestionActionButton} onClick={onTogglePin}>
-          {suggestion.pinned ? 'Unpin' : 'Pin'}
-        </button>
-        <button
-          type="button"
-          className={styles.suggestionActionButton}
-          onClick={onArchive}
-          disabled={suggestion.status === 'Archived'}
-        >
-          {suggestion.status === 'Archived' ? 'Archived' : 'Archive'}
-        </button>
+        {permissionLevel > 3 ? (
+          <>
+            <button type="button" className={styles.suggestionActionButton} onClick={onTogglePin}>
+              {suggestion.pinned ? 'Unpin' : 'Pin'}
+            </button>
+            <button
+              type="button"
+              className={styles.suggestionActionButton}
+              onClick={onArchive}
+              disabled={suggestion.status === 'Archived'}
+            >
+              {suggestion.status === 'Archived' ? 'Archived' : 'Archive'}
+            </button>
+          </>
+        ) : null}
         <button type="button" className={styles.suggestionActionButtonPrimary} onClick={onView}>
           View
         </button>
@@ -60,12 +65,14 @@ function SkSuggestionCard({ suggestion, isNew, onTogglePin, onArchive, onView })
 }
 
 function SkSuggestions() {
+  const { user } = useContext(AuthContext);
   const [suggestions, setSuggestions] = useState(SUGGESTIONS);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [selectedSuggestionId, setSelectedSuggestionId] = useState(null);
   const [viewedIds, setViewedIds] = useState(new Set());
+  const permissionLevel = user?.permissionLevel ?? 0;
 
   const handleCloseModal = () => {
     if (selectedSuggestionId !== null && !viewedIds.has(selectedSuggestionId)) {
@@ -82,6 +89,7 @@ function SkSuggestions() {
   };
 
   const handleTogglePin = (suggestionId) => {
+    if (permissionLevel <= 3) return;
     setSuggestions((prev) =>
       prev.map((suggestion) =>
         suggestion.id === suggestionId ? { ...suggestion, pinned: !suggestion.pinned } : suggestion
@@ -90,6 +98,7 @@ function SkSuggestions() {
   };
 
   const handleArchive = (suggestionId) => {
+    if (permissionLevel <= 3) return;
     setSuggestions((prev) =>
       prev.map((suggestion) =>
         suggestion.id === suggestionId ? { ...suggestion, status: 'Archived' } : suggestion
@@ -98,7 +107,7 @@ function SkSuggestions() {
   };
 
   const handleModalStatusChange = (nextStatus) => {
-    if (selectedSuggestionId === null) return;
+    if (permissionLevel <= 3 || selectedSuggestionId === null) return;
 
     setSuggestions((prev) =>
       prev.map((suggestion) =>
@@ -161,6 +170,7 @@ function SkSuggestions() {
             <SkSuggestionCard
               key={suggestion.id}
               suggestion={suggestion}
+              permissionLevel={permissionLevel}
               isNew={!viewedIds.has(suggestion.id) && suggestion.status === 'Pending'}
               onView={() => setSelectedSuggestionId(suggestion.id)}
               onTogglePin={() => handleTogglePin(suggestion.id)}
@@ -230,32 +240,34 @@ function SkSuggestions() {
                 Submitted by <strong>{selectedSuggestion.submittedBy ?? 'Unknown'}</strong>
               </p>
 
-              <div className={styles.detailsModalActions}>
-                <button
-                  type="button"
-                  className={`${styles.detailsModalActionButton} ${styles.detailsModalActionApprove}`}
-                  onClick={() => handleModalStatusChange('Accepted')}
-                  disabled={selectedSuggestion.status === 'Accepted'}
-                >
-                  Approve
-                </button>
-                <button
-                  type="button"
-                  className={`${styles.detailsModalActionButton} ${styles.detailsModalActionImplement}`}
-                  onClick={() => handleModalStatusChange('Implemented')}
-                  disabled={selectedSuggestion.status === 'Implemented'}
-                >
-                  Implement
-                </button>
-                <button
-                  type="button"
-                  className={`${styles.detailsModalActionButton} ${styles.detailsModalActionDecline}`}
-                  onClick={() => handleModalStatusChange('Declined')}
-                  disabled={selectedSuggestion.status === 'Declined'}
-                >
-                  Decline
-                </button>
-              </div>
+              {permissionLevel > 3 ? (
+                <div className={styles.detailsModalActions}>
+                  <button
+                    type="button"
+                    className={`${styles.detailsModalActionButton} ${styles.detailsModalActionApprove}`}
+                    onClick={() => handleModalStatusChange('Accepted')}
+                    disabled={selectedSuggestion.status === 'Accepted'}
+                  >
+                    Approve
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.detailsModalActionButton} ${styles.detailsModalActionImplement}`}
+                    onClick={() => handleModalStatusChange('Implemented')}
+                    disabled={selectedSuggestion.status === 'Implemented'}
+                  >
+                    Implement
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.detailsModalActionButton} ${styles.detailsModalActionDecline}`}
+                    onClick={() => handleModalStatusChange('Declined')}
+                    disabled={selectedSuggestion.status === 'Declined'}
+                  >
+                    Decline
+                  </button>
+                </div>
+              ) : null}
             </div>
           </div>
         </div>

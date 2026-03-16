@@ -5,16 +5,14 @@
 
 .landing-header {
 	display: flex;
-    height: 65px;
+    height: 74px;
 	justify-content: center;
 	align-items: center;
-	background: #fff;
-	border-bottom: solid 1px #DDE2E8;
+	background: transparent;
 }
 
-
 .header-container {
-    max-width: 1500px;
+    max-width: 1024px;
     width: 100%;
     display: flex;
     justify-content: space-between;

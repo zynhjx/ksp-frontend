@@ -1,0 +1,148 @@
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modalContainer {
+  width: min(760px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  padding: 20px;
+}
+
+.modalContainer,
+.modalContainer * {
+  box-sizing: border-box;
+}
+
+.modalContainer h2 {
+  margin: 0;
+  color: #111827;
+}
+
+.modalSubtitle {
+  margin: 8px 0 16px;
+  color: #4b5563;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.twoColumn {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.fieldGroup label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.fieldGroup input,
+.fieldGroup textarea {
+  width: 100%;
+  max-width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font: inherit;
+  color: #111827;
+  background: #ffffff;
+  outline: none;
+}
+
+.fieldGroup input {
+  min-height: 42px;
+}
+
+.fieldGroup textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+
+.fieldGroup input:focus,
+.fieldGroup textarea:focus {
+  border-width: 1px;
+  border-color: #0058a3;
+  box-shadow: none;
+  outline: 2px solid rgba(0, 88, 163, 0.2);
+}
+
+.modalHint {
+  margin: 0;
+  color: #4b5563;
+  font-size: 0.84rem;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.cancelBtn,
+.saveBtn {
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cancelBtn {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+}
+
+.saveBtn {
+  border: 1px solid #004d8f;
+  background: #0058a3;
+  color: #ffffff;
+}
+
+.saveBtn:hover {
+  background: #004d8f;
+}
+
+@media (max-width: 640px) {
+  .modalContainer {
+    padding: 16px;
+  }
+
+  .twoColumn {
+    grid-template-columns: 1fr;
+  }
+
+  .modalActions {
+    flex-direction: column;
+  }
+
+  .cancelBtn,
+  .saveBtn {
+    width: 100%;
+  }
+}

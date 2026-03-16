@@ -177,7 +177,7 @@ function AdminYouthManagement() {
 				data={filtered}
 				tableType="youth"
 				handleRowClick={handleRowClick}
-				hasActions={true}
+				permissionLevel={4}
 				onDelete={handleDeleteClick}
 				deleteLabel="Delete"
 			/>

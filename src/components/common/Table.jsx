@@ -7,7 +7,8 @@ export default function Table({
   onViewData,
   onEdit,
   onDelete,
-  deleteLabel = 'Remove'
+  deleteLabel = 'Remove',
+  permissionLevel
 }) {
 
   const resolvedType = tableType
@@ -33,6 +34,7 @@ export default function Table({
             <thead>
         {isSkTable ?
                 <tr>
+                  
                     <th>Name</th>
                     <th>Position</th>
                     <th>Barangay</th>
@@ -105,24 +107,28 @@ export default function Table({
                       )}
 
                       
-                      <button
-                        className={style.editBtn}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onEdit?.(row);
-                        }}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className={style.deleteBtn}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDelete?.(row);
-                        }}
-                      >
-                        {deleteLabel}
-                      </button>
+                      {permissionLevel >= 2 ? (
+                        <>
+                          <button
+                            className={style.editBtn}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onEdit?.(row);
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className={style.deleteBtn}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onDelete?.(row);
+                            }}
+                          >
+                            {deleteLabel}
+                          </button>
+                        </>
+                      ) : null}
                   </td>
 
                 </tr>
@@ -221,24 +227,28 @@ export default function Table({
                         View Data
                       </button>
                     )}
-                    <button
-                      className={style.editBtn}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEdit?.(row);
-                      }}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className={style.deleteBtn}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete?.(row);
-                      }}
-                    >
-                      {deleteLabel}
-                    </button>
+                    {permissionLevel > 3 ? (
+                      <>
+                        <button
+                          className={style.editBtn}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEdit?.(row);
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className={style.deleteBtn}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onDelete?.(row);
+                          }}
+                        >
+                          {deleteLabel}
+                        </button>
+                      </>
+                    ) : null}
                   </div>
               </article>
             ))}

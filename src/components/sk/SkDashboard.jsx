@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import PageError from '../common/PageError';
 import { apiFetch } from '../../api';
 import { AuthContext } from '../../contexts/AuthContext';
+import { SidebarContext } from '../../contexts/SidebarContext';
 import {
     BarChart,
     Bar,
@@ -38,7 +39,12 @@ const COLORS = [
 ];
 const RESIZE_DEBOUNCE_MS = 24;
 const RESIZE_ANIMATION_LOCK_MS = 160;
+const SIDEBAR_TOGGLE_ANIMATION_LOCK_MS = 180;
 const LARGE_DATA_THRESHOLD = 80;
+const CHART_ANIMATION_EASING = 'ease-out';
+const PIE_ANIMATION_DURATION_MS = 320;
+const BAR_ANIMATION_DURATION_MS = 260;
+const LINE_ANIMATION_DURATION_MS = 340;
 const MAX_AGE_POINTS = 120;
 const BAR_MARGIN = { top: 8, right: 8, left: 0, bottom: 8 };
 const AXIS_TICK = { fontSize: 12 };
@@ -157,12 +163,12 @@ const EmptyChartCard = memo(function EmptyChartCard({ title }) {
     );
 });
 
-const PieChartCard = memo(function PieChartCard({ title, data, innerRadius, outerRadius, isResizing = false }) {
+const PieChartCard = memo(function PieChartCard({ title, data, innerRadius, outerRadius, isResizing = false, isSidebarToggling = false, animationBegin = 0 }) {
     if (!hasItems(data)) {
         return <EmptyChartCard title={title} />;
     }
 
-    const shouldAnimate = !isResizing && data.length < LARGE_DATA_THRESHOLD;
+    const shouldAnimate = !isResizing && !isSidebarToggling && data.length < LARGE_DATA_THRESHOLD;
     return (
         <div className={dashboardStyles.dashboardChartCard}>
             <h3 className={dashboardStyles.dashboardChartTitle}>{title}</h3>
@@ -179,7 +185,9 @@ const PieChartCard = memo(function PieChartCard({ title, data, innerRadius, oute
                             dataKey="value"
                             label
                             isAnimationActive={shouldAnimate}
-                            animationDuration={350}
+                            animationDuration={PIE_ANIMATION_DURATION_MS}
+                            animationEasing={CHART_ANIMATION_EASING}
+                            animationBegin={animationBegin}
                         >
                             {data.map((entry, index) => (
                                 <Cell key={`${entry.name}-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -193,12 +201,12 @@ const PieChartCard = memo(function PieChartCard({ title, data, innerRadius, oute
     );
 });
 
-const BarChartCard = memo(function BarChartCard({ title, data, xDataKey, barDataKey, barColor, xAxisProps = {}, isResizing = false }) {
+const BarChartCard = memo(function BarChartCard({ title, data, xDataKey, barDataKey, barColor, xAxisProps = {}, isResizing = false, isSidebarToggling = false, animationBegin = 0 }) {
     if (!hasItems(data)) {
         return <EmptyChartCard title={title} />;
     }
 
-    const shouldAnimate = !isResizing && data.length < LARGE_DATA_THRESHOLD;
+    const shouldAnimate = !isResizing && !isSidebarToggling && data.length < LARGE_DATA_THRESHOLD;
     return (
         <div className={dashboardStyles.dashboardChartCard}>
             <h3 className={dashboardStyles.dashboardChartTitle}>{title}</h3>
@@ -213,7 +221,9 @@ const BarChartCard = memo(function BarChartCard({ title, data, xDataKey, barData
                             dataKey={barDataKey}
                             fill={barColor}
                             isAnimationActive={shouldAnimate}
-                            animationDuration={350}
+                            animationDuration={BAR_ANIMATION_DURATION_MS}
+                            animationEasing={CHART_ANIMATION_EASING}
+                            animationBegin={animationBegin}
                         />
                     </BarChart>
                 </ResponsiveContainer>
@@ -222,12 +232,12 @@ const BarChartCard = memo(function BarChartCard({ title, data, xDataKey, barData
     );
 });
 
-const LineChartCard = memo(function LineChartCard({ title, data, xDataKey, lineDataKey, lineColor, isResizing = false }) {
+const LineChartCard = memo(function LineChartCard({ title, data, xDataKey, lineDataKey, lineColor, isResizing = false, isSidebarToggling = false, animationBegin = 0 }) {
     if (!hasItems(data)) {
         return <EmptyChartCard title={title} />;
     }
 
-    const shouldAnimate = !isResizing && data.length < LARGE_DATA_THRESHOLD;
+    const shouldAnimate = !isResizing && !isSidebarToggling && data.length < LARGE_DATA_THRESHOLD;
     return (
         <div className={dashboardStyles.dashboardChartCard}>
             <h3 className={dashboardStyles.dashboardChartTitle}>{title}</h3>
@@ -243,10 +253,14 @@ const LineChartCard = memo(function LineChartCard({ title, data, xDataKey, lineD
                             dataKey={lineDataKey}
                             stroke={lineColor}
                             strokeWidth={3}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
                             dot={{ r: 4 }}
                             activeDot={{ r: 6 }}
                             isAnimationActive={shouldAnimate}
-                            animationDuration={350}
+                            animationDuration={LINE_ANIMATION_DURATION_MS}
+                            animationEasing={CHART_ANIMATION_EASING}
+                            animationBegin={animationBegin}
                         />
                     </LineChart>
                 </ResponsiveContainer>
@@ -257,6 +271,7 @@ const LineChartCard = memo(function LineChartCard({ title, data, xDataKey, lineD
 
 function SkDashboard() {
     const { user } = useContext(AuthContext);
+    const { sidebarOpen } = useContext(SidebarContext);
     const [stats, setStats] = useState([]);
     const [_barangays, setBarangays] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -268,7 +283,9 @@ function SkDashboard() {
     const [ongoingProgramsData, setOngoingProgramsData] = useState([]);
     const [weeklySuggestionsData, setWeeklySuggestionsData] = useState([]);
     const [isResizing, setIsResizing] = useState(false);
+    const [isSidebarToggling, setIsSidebarToggling] = useState(false);
     const resizeTimeoutRef = useRef(null);
+    const sidebarToggleTimeoutRef = useRef(null);
     const apiUrl = import.meta.env.VITE_API_URL;
     const displayName = user?.first_name || 'SK Officer';
 
@@ -433,6 +450,24 @@ function SkDashboard() {
         };
     }, []);
 
+    useEffect(() => {
+        setIsSidebarToggling(true);
+
+        if (sidebarToggleTimeoutRef.current) {
+            clearTimeout(sidebarToggleTimeoutRef.current);
+        }
+
+        sidebarToggleTimeoutRef.current = setTimeout(() => {
+            setIsSidebarToggling(false);
+        }, SIDEBAR_TOGGLE_ANIMATION_LOCK_MS);
+
+        return () => {
+            if (sidebarToggleTimeoutRef.current) {
+                clearTimeout(sidebarToggleTimeoutRef.current);
+            }
+        };
+    }, [sidebarOpen]);
+
     if (loading) return <DashboardSkeleton />;
     if (isError) return <PageError onRetry={fetchData} />;
 
@@ -453,13 +488,22 @@ function SkDashboard() {
                 ))
             )}
         >
-            <PieChartCard title="Employment Status" data={employmentData} outerRadius="72%" isResizing={isResizing} />
+            <PieChartCard
+                title="Employment Status"
+                data={employmentData}
+                outerRadius="72%"
+                isResizing={isResizing}
+                isSidebarToggling={isSidebarToggling}
+                animationBegin={0}
+            />
             <PieChartCard
                 title="Education Level Distribution"
                 data={educationData}
                 innerRadius="42%"
                 outerRadius="72%"
                 isResizing={isResizing}
+                isSidebarToggling={isSidebarToggling}
+                animationBegin={0}
             />
             <BarChartCard
                 title="Age Distribution"
@@ -468,6 +512,8 @@ function SkDashboard() {
                 barDataKey="count"
                 barColor="#8884d8"
                 isResizing={isResizing}
+                isSidebarToggling={isSidebarToggling}
+                animationBegin={0}
             />
             <BarChartCard
                 title="Ongoing Programs Participants"
@@ -476,6 +522,8 @@ function SkDashboard() {
                 barDataKey="participants"
                 barColor="#22c55e"
                 isResizing={isResizing}
+                isSidebarToggling={isSidebarToggling}
+                animationBegin={0}
                 xAxisProps={{
                     interval: 0,
                     angle: -18,
@@ -491,6 +539,8 @@ function SkDashboard() {
                 lineDataKey="count"
                 lineColor="#ff8042"
                 isResizing={isResizing}
+                isSidebarToggling={isSidebarToggling}
+                animationBegin={0}
             />
         </DashboardLayout>
     );
