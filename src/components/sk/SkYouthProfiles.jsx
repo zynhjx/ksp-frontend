@@ -5,6 +5,7 @@ import PageError from '../common/PageError';
 import ManagementPageLayout from '../common/ManagementPageLayout';
 import ManagementPageSkeleton from '../common/ManagementPageSkeleton';
 import { AuthContext } from '../../contexts/AuthContext';
+import { apiFetch, apiUrl } from '../../api';
 
 const MOCK_YOUTH_PROFILES = [
   {
@@ -59,13 +60,12 @@ function SkYouthProfiles() {
     setIsError(false);
 
     try {
-      // const res = await apiFetch(`${apiUrl}/api/sk/youths`);
-      // if (!res.ok) {
-      //   throw new Error('Failed to fetch youth profiles');
-      // }
-      // const data = await res.json();
-      // setYouthList(Array.isArray(data) ? data : []);
-      setYouthList(MOCK_YOUTH_PROFILES);
+      const res = await apiFetch(`${apiUrl}/api/sk/youths`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch youth profiles');
+      }
+      const data = await res.json();
+      setYouthList(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error(err);
       setYouthList([]);

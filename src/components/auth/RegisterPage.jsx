@@ -1,66 +1,153 @@
 import "./auth.css"
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../assets/pngs/ksp-logo.png";
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthContext } from "../../contexts/AuthContext"; 
+import {
+    Box,
+    Button,
+    Card,
+    CardContent,
+    MenuItem,
+    Step,
+    StepLabel,
+    Stepper,
+    TextField,
+} from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
 
 
 function RegisterPage() {
     const navigate = useNavigate();
     const { fetchUser } = useContext(AuthContext);
     const apiUrl = import.meta.env.VITE_API_URL;
-    const [showPassword, setShowPassword] = useState(false);
-    const [showConfPassword, setShowConfPassword] = useState(false);
-    const EyeClosed = (
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-            <g id="SVGRepo_iconCarrier">
-                <path d="M2.99902 3L20.999 21M9.8433 9.91364C9.32066 10.4536 8.99902 11.1892 8.99902 12C8.99902 13.6569 10.3422 15 11.999 15C12.8215 15 13.5667 14.669 14.1086 14.133M6.49902 6.64715C4.59972 7.90034 3.15305 9.78394 2.45703 12C3.73128 16.0571 7.52159 19 11.9992 19C13.9881 19 15.8414 18.4194 17.3988 17.4184M10.999 5.04939C11.328 5.01673 11.6617 5 11.9992 5C16.4769 5 20.2672 7.94291 21.5414 12C21.2607 12.894 20.8577 13.7338 20.3522 14.5" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-            </g>
-        </svg>
-    );
-    const EyeOpen = (
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-            <g id="SVGRepo_iconCarrier">
-                <path d="M15.0007 12C15.0007 13.6569 13.6576 15 12.0007 15C10.3439 15 9.00073 13.6569 9.00073 12C9.00073 10.3431 10.3439 9 12.0007 9C13.6576 9 15.0007 10.3431 15.0007 12Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-                <path d="M12.0012 5C7.52354 5 3.73326 7.94288 2.45898 12C3.73324 16.0571 7.52354 19 12.0012 19C16.4788 19 20.2691 16.0571 21.5434 12C20.2691 7.94291 16.4788 5 12.0012 5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-            </g>
-        </svg>
-    );
-
-    const [formData, setFormData] = useState({
-        first_name: "",
-        last_name: "",
-        email: "",
-        password: "",
-    });
-    const [confPassword, setConfPassword] = useState("");
+    const [activeStep, setActiveStep] = useState(0);
     const [formError, setFormError] = useState("");
+    const [barangayOptions, setBarangayOptions] = useState([]);
+    const [isBarangayLoading, setIsBarangayLoading] = useState(true);
 
-    const handleChange = (e) => {
-        if (e.target.name === "conf-password") {
-            setConfPassword(e.target.value);
-        } else {
-            setFormData({ ...formData, [e.target.name]: e.target.value });
+    const steps = ["Personal Info", "Background", "Account"];
+    const stepFields = [
+        ["first_name", "last_name", "date_of_birth", "contact_number", "barangay"],
+        ["school", "education", "employment_status"],
+        ["email", "password", "confirm_password"],
+    ];
+
+    const {
+        control,
+        handleSubmit,   
+        trigger,
+        getValues,
+        reset,
+        formState: { errors, isSubmitting },
+    } = useForm({
+        defaultValues: {
+            first_name: "",
+            last_name: "",
+            date_of_birth: "",
+            contact_number: "",
+            barangay: "",
+            school: "",
+            education: "",
+            employment_status: "",
+            email: "",
+            password: "",
+            confirm_password: "",
+        },
+        mode: "onTouched",
+    });
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const fetchBarangays = async () => {
+            setIsBarangayLoading(true);
+
+            const endpoints = [
+                `${apiUrl}/api/barangays`,
+                `${apiUrl}/api/admin/barangays`,
+            ];
+
+            try {
+                for (const endpoint of endpoints) {
+                    const response = await fetch(endpoint, { credentials: "include" });
+                    if (!response.ok) {
+                        continue;
+                    }
+
+                    const data = await response.json();
+                    const items = Array.isArray(data?.barangays)
+                        ? data.barangays
+                        : Array.isArray(data)
+                            ? data
+                            : [];
+
+                    const normalized = items
+                        .map((item) => {
+                            if (typeof item === "string") {
+                                return { label: item, value: item };
+                            }
+
+                            const label = item?.name || item?.barangay_name || item?.barangayName;
+                            return label ? { label, value: label } : null;
+                        })
+                        .filter(Boolean);
+
+                    if (normalized.length > 0) {
+                        if (isMounted) {
+                            setBarangayOptions(normalized);
+                        }
+                        break;
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to load barangays", err);
+            } finally {
+                if (isMounted) {
+                    setIsBarangayLoading(false);
+                }
+            }
+        };
+
+        fetchBarangays();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [apiUrl]);
+
+    const handleNext = async () => {
+        const isStepValid = await trigger(stepFields[activeStep]);
+        if (isStepValid) {
+            setActiveStep((prev) => prev + 1);
+            setFormError("");
         }
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault(); // Prevent page reload
+    const handleBack = () => {
+        setActiveStep((prev) => prev - 1);
+    };
+
+    const onSubmit = async (values) => {
         setFormError("");
-        if (formData.password.length < 8) {
-            setFormError("Password must be at least 8 characters long.");
-            return;
-        }
-        if (formData.password !== confPassword) {
-            setFormError("Passwords do not match.");
-            return;
-        }
+
+        const payload = {
+            first_name: values.first_name,
+            last_name: values.last_name,
+            date_of_birth: values.date_of_birth,
+            contact_number: values.contact_number,
+            barangay: values.barangay,
+            school: values.school,
+            education: values.education,
+            employment_status: values.employment_status,
+            email: values.email,
+            password: values.password,
+        };
+
+        console.log(payload)
+
         try {
             const response = await fetch(`${apiUrl}/api/register`, {
                 method: "POST",
@@ -68,13 +155,13 @@ function RegisterPage() {
                     "Content-Type": "application/json",
                 },
                 credentials: "include", // 🔥 important for cookies!
-                body: JSON.stringify(formData),
+                body: JSON.stringify(payload),
             });
             const data = await response.json();
             if (response.status === 201) {
                 toast.success(data.message, data.user || "Account successfully registered!");
-                setFormData({ first_name: "", last_name: "", email: "", password: "" });
-                setConfPassword("");
+                reset();
+                setActiveStep(0);
                 await fetchUser()
                 navigate("/youth/dashboard");
             } else if (!response.ok) {
@@ -95,94 +182,264 @@ function RegisterPage() {
                 
                 <h2>Create your account</h2>
                 <p>Please fill in your details to create an account.</p>
-                <form onSubmit={handleSubmit}>
-    
-                    <div className="info-row">
-                        <div className="info-col">
-                            <label htmlFor="firstname">First Name</label>
-                            <input
-                                type="text"
-                                id="firstname"
-                                name="first_name"
-                                value={formData.first_name}
-                                onChange={handleChange}
-                                required
-                                placeholder="Juan" />
-                        </div>
-                        <div className="info-col">
-                            <label htmlFor="lastname">Last Name</label>
-                            <input 
-                                type="text" 
-                                id="lastname" 
-                                name="last_name" 
-                                value={formData.last_name}
-                                onChange={handleChange}
-                                required 
-                                placeholder="Dela Cruz" />
-                        </div>
-                    </div>
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <Box sx={{ width: "100%", mb: 3 }}>
+                        <Stepper activeStep={activeStep} alternativeLabel>
+                            {steps.map((label) => (
+                                <Step key={label}>
+                                    <StepLabel>{label}</StepLabel>
+                                </Step>
+                            ))}
+                        </Stepper>
+                    </Box>
 
-                    <label htmlFor="email">Email</label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        value={formData.email}
-                        onChange={handleChange}
-                        required 
-                        placeholder="example@example.com" />     
+                    <Card sx={{ mb: 2, backgroundColor: "transparent", border: "none", boxShadow: "none" }}>
+                        <CardContent>
+                            {activeStep === 0 && (
+                                <Box sx={{ display: "grid", gap: 2, gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" } }}>
+                                    <Controller
+                                        name="first_name"
+                                        control={control}
+                                        rules={{ required: "First name is required" }}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="First Name"
+                                                fullWidth
+                                                error={!!errors.first_name}
+                                                helperText={errors.first_name?.message}
+                                            />
+                                        )}
+                                    />
+                                    <Controller
+                                        name="last_name"
+                                        control={control}
+                                        rules={{ required: "Last name is required" }}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="Last Name"
+                                                fullWidth
+                                                error={!!errors.last_name}
+                                                helperText={errors.last_name?.message}
+                                            />
+                                        )}
+                                    />
+                                    <Controller
+                                        name="date_of_birth"
+                                        control={control}
+                                        rules={{ required: "Date of birth is required" }}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                type="date"
+                                                label="Date of Birth"
+                                                fullWidth
+                                                InputLabelProps={{ shrink: true }}
+                                                error={!!errors.date_of_birth}
+                                                helperText={errors.date_of_birth?.message}
+                                            />
+                                        )}
+                                    />
+                                    <Controller
+                                        name="contact_number"
+                                        control={control}
+                                        rules={{
+                                            required: "Contact number is required",
+                                            pattern: {
+                                                value: /^(?:\+63|0)\d{10}$/,
+                                                message: "Use a valid PH number (e.g., 09171234567 or +639171234567)",
+                                            },
+                                        }}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="Contact Number"
+                                                fullWidth
+                                                error={!!errors.contact_number}
+                                                helperText={errors.contact_number?.message}
+                                            />
+                                        )}
+                                    />
+                                    <Controller
+                                        name="barangay"
+                                        control={control}
+                                        rules={{ required: "Barangay is required" }}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="Barangay"
+                                                select
+                                                fullWidth
+                                                sx={{ gridColumn: { xs: "span 1", sm: "span 2" } }}
+                                                error={!!errors.barangay}
+                                                helperText={errors.barangay?.message}
+                                                disabled={isBarangayLoading}
+                                            >
+                                                <MenuItem value="" disabled>
+                                                    {isBarangayLoading ? "Loading barangays..." : "Select barangay"}
+                                                </MenuItem>
+                                                {barangayOptions.map((barangay) => (
+                                                    <MenuItem key={barangay.value} value={barangay.value}>
+                                                        {barangay.label}
+                                                    </MenuItem>
+                                                ))}
+                                            </TextField>
+                                        )}
+                                    />
+                                </Box>
+                            )}
 
+                            {activeStep === 1 && (
+                                <Box sx={{ display: "grid", gap: 2 }}>
+                                    <Controller
+                                        name="school"
+                                        control={control}
+                                        rules={{ required: "School is required" }}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="School"
+                                                fullWidth
+                                                error={!!errors.school}
+                                                helperText={errors.school?.message}
+                                            />
+                                        )}
+                                    />
+                                    <Controller
+                                        name="education"
+                                        control={control}
+                                        rules={{ required: "Education is required" }}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="Education"
+                                                select
+                                                fullWidth
+                                                error={!!errors.education}
+                                                helperText={errors.education?.message}
+                                            >
+                                                <MenuItem value="Elementary">Elementary</MenuItem>
+                                                <MenuItem value="High School">High School</MenuItem>
+                                                <MenuItem value="Senior High School">Senior High School</MenuItem>
+                                                <MenuItem value="College">College</MenuItem>
+                                                <MenuItem value="Vocational">Vocational</MenuItem>
+                                                <MenuItem value="Postgraduate">Postgraduate</MenuItem>
+                                            </TextField>
+                                        )}
+                                    />
+                                    <Controller
+                                        name="employment_status"
+                                        control={control}
+                                        rules={{ required: "Employment status is required" }}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                label="Employment Status"
+                                                select
+                                                fullWidth
+                                                error={!!errors.employment_status}
+                                                helperText={errors.employment_status?.message}
+                                            >
+                                                <MenuItem value="Employed">Employed</MenuItem>
+                                                <MenuItem value="Unemployed">Unemployed</MenuItem>
+                                                <MenuItem value="Self-employed">Self-employed</MenuItem>
+                                                <MenuItem value="Student">Student</MenuItem>
+                                            </TextField>
+                                        )}
+                                    />
+                                </Box>
+                            )}
 
-                    <label htmlFor="password">Password</label>
-                    <div className="password-wrapper">
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            className="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            id="password"
-                            name="password"
-                            required
-                            placeholder="••••••••••"
-                        />
-                        <span
-                            className="toggle-password"
-                            tabIndex="0"
-                            onClick={() => setShowPassword((prev) => !prev)}
-                            style={{ cursor: "pointer",
-                                opacity: showPassword ? 1 : 0.6
-                             }}
-                        >
-                            {showPassword ? EyeOpen : EyeClosed}
-                        </span>
-                    </div>
+                            {activeStep === 2 && (
+                                <Box sx={{ display: "grid", gap: 2 }}>
+                                    <Controller
+                                        name="email"
+                                        control={control}
+                                        rules={{
+                                            required: "Email is required",
+                                            pattern: {
+                                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                                message: "Enter a valid email address",
+                                            },
+                                        }}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                type="email"
+                                                label="Email"
+                                                fullWidth
+                                                error={!!errors.email}
+                                                helperText={errors.email?.message}
+                                            />
+                                        )}
+                                    />
+                                    <Controller
+                                        name="password"
+                                        control={control}
+                                        rules={{
+                                            required: "Password is required",
+                                            minLength: {
+                                                value: 8,
+                                                message: "Password must be at least 8 characters long",
+                                            },
+                                        }}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                type="password"
+                                                label="Password"
+                                                fullWidth
+                                                error={!!errors.password}
+                                                helperText={errors.password?.message}
+                                            />
+                                        )}
+                                    />
+                                    <Controller
+                                        name="confirm_password"
+                                        control={control}
+                                        rules={{
+                                            required: "Confirm password is required",
+                                            validate: (value) =>
+                                                value === getValues("password") || "Passwords do not match",
+                                        }}
+                                        render={({ field }) => (
+                                            <TextField
+                                                {...field}
+                                                type="password"
+                                                label="Confirm Password"
+                                                fullWidth
+                                                error={!!errors.confirm_password}
+                                                helperText={errors.confirm_password?.message}
+                                            />
+                                        )}
+                                    />
+                                </Box>
+                            )}
+                        </CardContent>
+                    </Card>
 
-                    <label htmlFor="conf-password">Confirm Password</label>
-                    <div className="password-wrapper" style={{ marginBottom: '8px' }}>
-                        <input
-                            type={showConfPassword ? "text" : "password"}
-                            className="password"
-                            id="conf-password"
-                            name="conf-password"
-                            value={confPassword}
-                            onChange={handleChange}
-                            required
-                            placeholder="••••••••••"
-                        />
-                        <span
-                            className="toggle-password"
-                            tabIndex="0"
-                            onClick={() => setShowConfPassword((prev) => !prev)}
-                            style={{ cursor: "pointer",
-                                opacity: showConfPassword ? 1 : 0.6
-                             }}
-                        >
-                            {showConfPassword ? EyeOpen : EyeClosed}
-                        </span>
-                    </div>
                     {formError && <div style={{ color: 'red', marginBottom: '16px' }}>{formError}</div>}
 
-                    <button type="submit">Register</button>
+                    <Box sx={{ display: "flex", justifyContent: "space-between", gap: 1 }}>
+                        <Button
+                            variant="outlined"
+                            onClick={handleBack}
+                            disabled={activeStep === 0}
+                        >
+                            Back
+                        </Button>
+
+                        {activeStep < steps.length - 1 ? (
+                            <Button variant="contained" onClick={handleNext}>
+                                Next
+                            </Button>
+                        ) : (
+                            <Button type="submit" variant="contained" disabled={isSubmitting}>
+                                {isSubmitting ? "Registering..." : "Register"}
+                            </Button>
+                        )}
+                    </Box>
                 </form>
                 <div className="redirect-container">
                     <span>Already have an account? </span>

@@ -76,18 +76,21 @@
     color: #444;
 }
 
-.form-container input {
+.form-container input:not(.MuiInputBase-input) {
     margin-bottom: 18px;
 }
 
-.form-container input,
+.form-container input:not(.MuiInputBase-input),
 .form-container select {
-    
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 6px;
     font-size: 1rem;
     background: var(--theme-white);
+}
+
+.form-container .MuiFormHelperText-root {
+    margin-bottom: 0;
 }
 
 .select-wrapper {
@@ -151,7 +154,7 @@
     background-color: transparent;
 }
 
-.form-container button {
+.form-container button:not(.MuiButton-root) {
     padding: 12px;
     background: var(--theme-blue);
     color: var(--theme-white);
@@ -163,7 +166,7 @@
     transition: background 0.2s;
 }
 
-.form-container button:hover {
+.form-container button:not(.MuiButton-root):hover {
     background: #005fcc;
 }
 

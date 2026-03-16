@@ -1,4 +1,4 @@
-const apiUrl = import.meta.env.VITE_API_URL;
+export const apiUrl = import.meta.env.VITE_API_URL;
 
 export const apiFetch = async (url, options = {}) => {
   const res = await fetch(url, {
