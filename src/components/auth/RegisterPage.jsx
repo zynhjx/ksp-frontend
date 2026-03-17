@@ -146,7 +146,6 @@ function RegisterPage() {
             password: values.password,
         };
 
-        console.log(payload)
 
         try {
             const response = await fetch(`${apiUrl}/api/register`, {
@@ -183,7 +182,7 @@ function RegisterPage() {
                 <h2>Create your account</h2>
                 <p>Please fill in your details to create an account.</p>
                 <form onSubmit={handleSubmit(onSubmit)}>
-                    <Box sx={{ width: "100%", mb: 3 }}>
+                    <Box sx={{ width: "100%", mb: 1 }}>
                         <Stepper activeStep={activeStep} alternativeLabel>
                             {steps.map((label) => (
                                 <Step key={label}>

@@ -50,9 +50,7 @@ const getCountdownLabel = (program, now) => {
 
 function ProgramCard({
   program,
-  now,
-  allowJoin = false,
-  onJoin,
+  now
 }) {
   const statusClass = getStatusClass(program.status)
 
@@ -78,20 +76,6 @@ function ProgramCard({
         <p className={`${styles.countdown} ${styles[`countdown${statusClass[0].toUpperCase()}${statusClass.slice(1)}`]}`}>
           {getCountdownLabel(program, now)}
         </p>
-
-        {allowJoin ? (
-          !program.joined ? (
-            <button
-              type="button"
-              className={styles.actionButton}
-              onClick={() => onJoin?.(program.id)}
-            >
-              Join
-            </button>
-          ) : (
-            <span className={styles.actionJoined}>Joined</span>
-          )
-        ) : null}
       </div>
     </article>
   )
