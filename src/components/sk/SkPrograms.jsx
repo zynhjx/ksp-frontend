@@ -1,7 +1,10 @@
 import { useCallback, useContext, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 import ManagementPageLayout from '../common/ManagementPageLayout'
 import ProgramCard from '../common/ProgramCard'
+import EmptyState from '../common/EmptyState'
 import cardStyles from '../common/ProgramCard.module.css'
 import { AuthContext } from '../../contexts/AuthContext'
 import { apiFetch, apiUrl } from '../../api'
@@ -9,7 +12,8 @@ import AddProgramModal from './AddProgramModal'
 
 
 
-const MIN_PERMISSION_TO_ADD = 2
+const MIN_PERMISSION_TO_MANAGE = 3
+const MySwal = withReactContent(Swal)
 
 const deriveProgramStatus = (startDate, untilDate) => {
   const startTime = new Date(startDate).getTime()
@@ -59,6 +63,8 @@ function SkPrograms() {
   const [statusFilter, setStatusFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [isAddProgramOpen, setIsAddProgramOpen] = useState(false)
+  const [isEditProgramOpen, setIsEditProgramOpen] = useState(false)
+  const [editingProgram, setEditingProgram] = useState(null)
   const permissionLevel = user?.permissionLevel ?? 0
 
   useEffect(() => {
@@ -104,7 +110,7 @@ function SkPrograms() {
   })
 
   const handleOpenAddProgram = () => {
-    if (permissionLevel < MIN_PERMISSION_TO_ADD) return
+    if (permissionLevel < MIN_PERMISSION_TO_MANAGE) return
     setIsAddProgramOpen(true)
   }
 
@@ -112,8 +118,13 @@ function SkPrograms() {
     setIsAddProgramOpen(false)
   }
 
+  const handleCloseEditProgram = () => {
+    setIsEditProgramOpen(false)
+    setEditingProgram(null)
+  }
+
   const handleAddProgram = async (formData) => {
-    if (permissionLevel < MIN_PERMISSION_TO_ADD) return
+    if (permissionLevel < MIN_PERMISSION_TO_MANAGE) return
 
     const { startDateTime, endDateTime, name, category, location, description } = formData
 
@@ -163,11 +174,97 @@ function SkPrograms() {
     }
   }
 
+  const handleEditProgram = (program) => {
+    if (permissionLevel < MIN_PERMISSION_TO_MANAGE) return
+    setEditingProgram(program)
+    setIsEditProgramOpen(true)
+  }
+
+  const handleUpdateProgram = async (formData) => {
+    if (permissionLevel < MIN_PERMISSION_TO_MANAGE || !editingProgram?.id) return
+
+    const { startDateTime, endDateTime, name, category, location, description } = formData
+
+    const payload = {
+      name: name.trim(),
+      category: category.trim(),
+      location: location.trim(),
+      description: description.trim(),
+      startDate: startDateTime,
+      untilDate: endDateTime,
+    }
+
+    try {
+      const res = await apiFetch(`${apiUrl}/api/sk/programs/${editingProgram.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      if (!res.ok) {
+        const result = await res.json().catch(() => ({}))
+        throw new Error(result.message || 'Failed to update program')
+      }
+
+      const updatedPayload = await res.json().catch(() => null)
+      const [updatedProgram] = extractPrograms(updatedPayload)
+      const normalizedUpdatedProgram = normalizeProgram(updatedProgram)
+
+      if (normalizedUpdatedProgram) {
+        setPrograms((previous) => previous.map((item) => (
+          item.id === normalizedUpdatedProgram.id ? normalizedUpdatedProgram : item
+        )))
+      } else {
+        await fetchPrograms()
+      }
+
+      setNow(Date.now())
+      handleCloseEditProgram()
+      toast.success('Program updated successfully')
+    } catch (err) {
+      console.error(err)
+      toast.error(err.message || 'Failed to update program')
+    }
+  }
+
+  const handleDeleteProgram = async (program) => {
+    if (permissionLevel < MIN_PERMISSION_TO_MANAGE) return
+
+    const result = await MySwal.fire({
+      title: 'Delete program?',
+      text: `This will permanently delete "${program.name}".`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+    })
+
+    if (!result.isConfirmed) return
+
+    try {
+      const res = await apiFetch(`${apiUrl}/api/sk/programs/${program.id}`, {
+        method: 'DELETE',
+      })
+
+      if (!res.ok) {
+        const result = await res.json().catch(() => ({}))
+        throw new Error(result.message || 'Failed to delete program')
+      }
+
+      setPrograms((previous) => previous.filter((item) => item.id !== program.id))
+      toast.success('Program deleted successfully')
+    } catch (err) {
+      console.error(err)
+      toast.error(err.message || 'Failed to delete program')
+    }
+  }
+
   return (
     <ManagementPageLayout
       title="Programs"
       subtitle="View and monitor barangay programs using program cards instead of a table."
-      showAddButton={permissionLevel >= MIN_PERMISSION_TO_ADD}
+      showAddButton={permissionLevel >= MIN_PERMISSION_TO_MANAGE}
       addButtonLabel="+ Add Program"
       onAddButtonClick={handleOpenAddProgram}
       searchPlaceholder="Search by program name"
@@ -200,17 +297,31 @@ function SkPrograms() {
               key={program.id}
               program={program}
               now={now}
+              showDateTime
+              permissionLevel={permissionLevel}
+              requiredPermissionLevel={MIN_PERMISSION_TO_MANAGE}
+              onEdit={handleEditProgram}
+              onDelete={handleDeleteProgram}
             />
           ))}
         </section>
       ) : (
-        <p className={cardStyles.emptyState}>No programs found for the selected filters.</p>
+        <EmptyState />
       )}
 
       {isAddProgramOpen && (
         <AddProgramModal
           onClose={handleCloseAddProgram}
           onSubmit={handleAddProgram}
+        />
+      )}
+
+      {isEditProgramOpen && editingProgram && (
+        <AddProgramModal
+          mode="edit"
+          initialValues={editingProgram}
+          onClose={handleCloseEditProgram}
+          onSubmit={handleUpdateProgram}
         />
       )}
     </ManagementPageLayout>

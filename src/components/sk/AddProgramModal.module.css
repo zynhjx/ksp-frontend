@@ -156,6 +156,16 @@
   background: #004d8f;
 }
 
+.saveBtn:disabled {
+  background: #9ca3af;
+  border-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.saveBtn:disabled:hover {
+  background: #9ca3af;
+}
+
 @media (max-width: 640px) {
   .container {
     padding: 16px;

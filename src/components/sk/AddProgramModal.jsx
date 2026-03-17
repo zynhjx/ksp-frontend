@@ -1,5 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { toast } from 'react-toastify'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 import styles from './AddProgramModal.module.css'
+
+const MySwal = withReactContent(Swal)
 
 const CATEGORY_OPTIONS = [
   'Arts & Culture',
@@ -23,9 +28,71 @@ const initialForm = {
   endTime: '',
 }
 
-function AddProgramModal({ onClose, onSubmit }) {
+const toInputDate = (value) => {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+const toInputTime = (value) => {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  return `${hours}:${minutes}`
+}
+
+const buildFormFromInitialValues = (initialValues) => {
+  if (!initialValues) return initialForm
+
+  return {
+    name: String(initialValues.name ?? ''),
+    category: String(initialValues.category ?? ''),
+    location: String(initialValues.location ?? ''),
+    description: String(initialValues.description ?? ''),
+    startDate: toInputDate(initialValues.startDate),
+    startTime: toInputTime(initialValues.startDate),
+    endDate: toInputDate(initialValues.untilDate),
+    endTime: toInputTime(initialValues.untilDate),
+  }
+}
+
+const normalizeComparableForm = (value) => ({
+  name: (value.name || '').trim(),
+  category: (value.category || '').trim(),
+  location: (value.location || '').trim(),
+  description: (value.description || '').trim(),
+  startDate: value.startDate || '',
+  startTime: value.startTime || '',
+  endDate: value.endDate || '',
+  endTime: value.endTime || '',
+})
+
+function AddProgramModal({ onClose, onSubmit, mode = 'add', initialValues = null }) {
   const [form, setForm] = useState(initialForm)
   const [error, setError] = useState('')
+
+  const isEditMode = mode === 'edit'
+  const hasChanges = useMemo(() => {
+    if (!isEditMode) return true
+
+    const initialFormValues = buildFormFromInitialValues(initialValues)
+    const currentComparable = normalizeComparableForm(form)
+    const initialComparable = normalizeComparableForm(initialFormValues)
+
+    return JSON.stringify(currentComparable) !== JSON.stringify(initialComparable)
+  }, [form, initialValues, isEditMode])
+
+  useEffect(() => {
+    setForm(buildFormFromInitialValues(initialValues))
+  }, [initialValues])
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -40,9 +107,16 @@ function AddProgramModal({ onClose, onSubmit }) {
     setError('')
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
     setError('')
+
+    if (isEditMode) {
+      if (!hasChanges) {
+        toast.info('No changes detected.')
+        return
+      }
+    }
 
     const startTime = form.startTime || '00:00'
     const endTime = form.endTime || '00:00'
@@ -61,14 +135,36 @@ function AddProgramModal({ onClose, onSubmit }) {
       return
     }
 
+    if (isEditMode) {
+      const confirmResult = await MySwal.fire({
+        title: 'Save changes?',
+        text: 'Are you sure you want to update this program?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, save changes',
+        cancelButtonText: 'Cancel',
+        reverseButtons: true,
+        didOpen: () => {
+          const swalContainer = Swal.getContainer()
+          if (swalContainer) swalContainer.style.zIndex = '1300'
+        },
+      })
+
+      if (!confirmResult.isConfirmed) return
+    }
+
     onSubmit({ ...form, startTime, endTime, startDateTime, endDateTime })
   }
 
   return (
-    <div className={styles.overlay} onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="add-program-title">
+    <div className={styles.overlay} onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="program-modal-title">
       <div className={styles.container} onClick={(e) => e.stopPropagation()}>
-        <h2 id="add-program-title" className={styles.title}>Add Program</h2>
-        <p className={styles.subtitle}>Create a new youth program to show in the list.</p>
+        <h2 id="program-modal-title" className={styles.title}>{isEditMode ? 'Edit Program' : 'Add Program'}</h2>
+        <p className={styles.subtitle}>
+          {isEditMode
+            ? 'Update the program details.'
+            : 'Create a new youth program to show in the list.'}
+        </p>
 
         <form className={styles.form} onSubmit={handleSubmit} noValidate>
           {/* Program Name */}
@@ -191,8 +287,12 @@ function AddProgramModal({ onClose, onSubmit }) {
             <button type="button" className={styles.cancelBtn} onClick={onClose}>
               Cancel
             </button>
-            <button type="submit" className={styles.saveBtn}>
-              Add Program
+            <button
+              type="submit"
+              className={styles.saveBtn}
+              disabled={isEditMode && !hasChanges}
+            >
+              {isEditMode ? 'Save Changes' : 'Add Program'}
             </button>
           </div>
         </form>

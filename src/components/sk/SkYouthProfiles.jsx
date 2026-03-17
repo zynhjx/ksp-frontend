@@ -4,8 +4,19 @@ import { toast } from 'react-toastify';
 import PageError from '../common/PageError';
 import ManagementPageLayout from '../common/ManagementPageLayout';
 import ManagementPageSkeleton from '../common/ManagementPageSkeleton';
+import SkYouthProfileModal from './SkYouthProfileModal';
 import { AuthContext } from '../../contexts/AuthContext';
 import { apiFetch, apiUrl } from '../../api';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const parseJsonSafe = async (response) => {
+  try {
+    return await response.json();
+  } catch {
+    return null;
+  }
+};
 
 const MOCK_YOUTH_PROFILES = [
   {
@@ -46,12 +57,14 @@ const MOCK_YOUTH_PROFILES = [
 ];
 
 function SkYouthProfiles() {
+  const MySwal = withReactContent(Swal);
   const { user } = useContext(AuthContext);
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [youthList, setYouthList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isError, setIsError] = useState(false);
+  const [selectedYouth, setSelectedYouth] = useState(null);
 
   const currentBarangay = user?.barangay || user?.barangay_name || user?.barangayName || user?.barangay?.name || 'San Isidro';
 
@@ -65,7 +78,24 @@ function SkYouthProfiles() {
         throw new Error('Failed to fetch youth profiles');
       }
       const data = await res.json();
-      setYouthList(Array.isArray(data) ? data : []);
+      const normalizedData = Array.isArray(data)
+        ? data.map((youth) => {
+            const firstName = youth?.first_name || youth?.firstName || '';
+            const lastName = youth?.last_name || youth?.lastName || '';
+            const fullName = `${firstName} ${lastName}`.trim();
+
+            return {
+              ...youth,
+              name: youth?.name || fullName,
+              birth_date: youth?.birth_date || youth?.birthDate || youth?.birthdate,
+              barangay_name: youth?.barangay_name || youth?.barangayName || youth?.barangay,
+              education: youth?.education || youth?.education_level || youth?.educationLevel,
+              employmentStatus: youth?.employmentStatus || youth?.employment_status,
+            };
+          })
+        : [];
+
+      setYouthList(normalizedData);
     } catch (err) {
       console.error(err);
       setYouthList([]);
@@ -98,16 +128,43 @@ function SkYouthProfiles() {
 
   const handleSearchChange = (event) => setSearch(event.target.value);
 
-  const handleViewData = () => {
-    toast.info('Profile details view will be added soon.');
+  const handleViewData = (youth) => {
+    setSelectedYouth(youth);
   };
 
   const handleEdit = () => {
     toast.info('Editing youth profiles is not available in this view.');
   };
 
-  const handleDelete = () => {
-    toast.info('Deleting youth profiles is not available in this view.');
+  const handleDelete = async (youth) => {
+    const result = await MySwal.fire({
+      title: 'Delete youth profile?',
+      text: 'This youth profile will be deleted.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true,
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      const res = await apiFetch(`${apiUrl}/api/sk/youths/${youth.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) {
+        const resultData = await parseJsonSafe(res);
+        throw new Error(resultData?.message || 'Failed to delete youth profile');
+      }
+
+      setYouthList((previous) => previous.filter((item) => item.id !== youth.id));
+      toast.success('Youth profile deleted successfully');
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message || 'Failed to delete youth profile');
+    }
   };
 
   if (loading) return <ManagementPageSkeleton />;
@@ -141,9 +198,16 @@ function SkYouthProfiles() {
         onViewData={handleViewData}
         onEdit={handleEdit}
         onDelete={handleDelete}
-        deleteLabel="Remove"
+        deleteLabel="Delete"
         permissionLevel={user.permissionLevel}
       />
+
+      {selectedYouth && (
+        <SkYouthProfileModal
+          youth={selectedYouth}
+          onClose={() => setSelectedYouth(null)}
+        />
+      )}
     </ManagementPageLayout>
   );
 }

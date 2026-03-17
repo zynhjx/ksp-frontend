@@ -6,6 +6,15 @@ const formatDate = (value) => new Date(value).toLocaleDateString('en-PH', {
   day: 'numeric',
 })
 
+const formatDateTime = (value) => new Date(value).toLocaleString('en-PH', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+  hour12: true,
+})
+
 const getStatusClass = (status) => {
   const normalizedStatus = status.toLowerCase()
 
@@ -50,9 +59,16 @@ const getCountdownLabel = (program, now) => {
 
 function ProgramCard({
   program,
-  now
+  now,
+  showDateTime = false,
+  permissionLevel = 0,
+  requiredPermissionLevel = 3,
+  onEdit,
+  onDelete,
 }) {
   const statusClass = getStatusClass(program.status)
+  const formatStartUntil = showDateTime ? formatDateTime : formatDate
+  const canManageProgram = permissionLevel >= requiredPermissionLevel
 
   return (
     <article className={styles.card}>
@@ -68,14 +84,33 @@ function ProgramCard({
         <p><span>Location</span><strong>{program.location}</strong></p>
         <p><span>Created</span><strong>{formatDate(program.createdAt)}</strong></p>
         <p><span>Participants</span><strong>{program.participants}</strong></p>
-        <p><span>Start</span><strong>{formatDate(program.startDate)}</strong></p>
-        <p><span>Until</span><strong>{formatDate(program.untilDate)}</strong></p>
+        <p><span>Start</span><strong>{formatStartUntil(program.startDate)}</strong></p>
+        <p><span>Until</span><strong>{formatStartUntil(program.untilDate)}</strong></p>
       </div>
 
       <div className={styles.footer}>
         <p className={`${styles.countdown} ${styles[`countdown${statusClass[0].toUpperCase()}${statusClass.slice(1)}`]}`}>
           {getCountdownLabel(program, now)}
         </p>
+
+        {canManageProgram ? (
+          <div className={styles.actionGroup}>
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              onClick={() => onEdit?.(program)}
+            >
+              Edit
+            </button>
+            <button
+              type="button"
+              className={styles.deleteButton}
+              onClick={() => onDelete?.(program)}
+            >
+              Delete
+            </button>
+          </div>
+        ) : null}
       </div>
     </article>
   )

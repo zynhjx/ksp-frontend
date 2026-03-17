@@ -1,4 +1,5 @@
 import style from './Table.module.css'
+import EmptyState from './EmptyState'
 
 const getFullName = (row) => {
   if (row.name) return row.name;
@@ -19,7 +20,6 @@ function DesktopActionButtons({
   onViewData,
   onEdit,
   onDelete,
-  deleteLabel,
   permissionLevel,
   showViewButton = false,
 }) {
@@ -55,7 +55,7 @@ function DesktopActionButtons({
               onDelete?.(row);
             }}
           >
-            {deleteLabel}
+            Remove
           </button>
         </>
       ) : null}
@@ -370,7 +370,7 @@ export default function Table(props) {
   if (rows.length === 0) {
     return (
       <div className={style.tableWrapper}>
-        <p className={style.emptyText}>No items found.</p>
+        <EmptyState />
       </div>
     );
   }

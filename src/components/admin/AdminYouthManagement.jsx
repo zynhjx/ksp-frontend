@@ -176,6 +176,9 @@ function AdminYouthManagement() {
 			<Table
 				data={filtered}
 				tableType="youth"
+				youthTableOptions={{
+					showRegistered: false,
+				}}
 				handleRowClick={handleRowClick}
 				permissionLevel={4}
 				onDelete={handleDeleteClick}

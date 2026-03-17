@@ -140,6 +140,42 @@
   color: #374151;
 }
 
+.actionGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.secondaryButton,
+.deleteButton {
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.secondaryButton {
+  background: #f3f4f6;
+  color: #1f2937;
+  border-color: #d1d5db;
+}
+
+.secondaryButton:hover {
+  background: #e5e7eb;
+}
+
+.deleteButton {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #b91c1c;
+}
+
+.deleteButton:hover {
+  background: #b91c1c;
+}
+
 .actionButton,
 .actionJoined {
   border-radius: 10px;
@@ -185,6 +221,16 @@
   .footer {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .actionGroup {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .secondaryButton,
+  .deleteButton {
+    flex: 1;
   }
 
   .actionButton,

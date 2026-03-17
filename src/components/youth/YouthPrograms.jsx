@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import ProgramCard from '../common/ProgramCard'
+import EmptyState from '../common/EmptyState'
 import cardStyles from '../common/ProgramCard.module.css'
 import ManagementPageLayout from '../common/ManagementPageLayout'
 import './YouthPrograms.css'
@@ -151,7 +152,7 @@ function YouthPrograms() {
           ))}
         </section>
       ) : (
-        <p className={cardStyles.emptyState}>No programs found for the selected filters.</p>
+        <EmptyState />
       )}
     </ManagementPageLayout>
   )

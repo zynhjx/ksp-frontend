@@ -211,6 +211,7 @@ function BarangayManagement() {
         data={filtered}
         tableType="barangay"
         skTable={false}
+        permissionLevel={4}
       />
 
       
