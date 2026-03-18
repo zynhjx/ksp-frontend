@@ -2,28 +2,6 @@ import { useContext, useState } from 'react';
 import ManagementPageLayout from '../common/ManagementPageLayout';
 import { suggestionCardsGridClassName } from '../common/suggestionCardClasses';
 import cardStyles from '../common/SuggestionCard.module.css';
-import styles from './SkSuggestions.module.css';
-import { ACTIVE_STATUSES, CATEGORIES, SUGGESTIONS } from './suggestionData';
-import { AuthContext } from '../../contexts/AuthContext';
-
-const formatDate = (value) =>
-  new Date(value).toLocaleDateString('en-PH', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-
-const getCategoryClass = (category) => {
-  if (category === 'Education') return styles.catEducation;
-  if (category === 'Employment') return styles.catEmployment;
-  if (category === 'Health') return styles.catHealth;
-  if (category === 'Sports') return styles.catSports;
-  if (category === 'Environment') return styles.catEnvironment;
-  if (category === 'Community / Social') return styles.catCommunity;
-
-  return styles.catOther;
-};
-
 function SkSuggestionCard({ suggestion, isNew, onTogglePin, onArchive, onToggleLike, onOpenDetails, permissionLevel }) {
   return (
     <article
@@ -92,16 +70,71 @@ function SkSuggestionCard({ suggestion, isNew, onTogglePin, onArchive, onToggleL
     </article>
   );
 }
+import styles from './SkSuggestions.module.css';
+import { ACTIVE_STATUSES, CATEGORIES } from './suggestionData';
+import { useEffect } from 'react';
+import { apiUrl, apiFetch } from '../../api';
+import { AuthContext } from '../../contexts/AuthContext';
+import EmptyState from '../common/EmptyState'
+import { toast } from 'react-toastify';
+
+const formatDate = (value) =>
+  new Date(value).toLocaleDateString('en-PH', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+
+const getCategoryClass = (category) => {
+  if (category === 'Education') return styles.catEducation;
+  if (category === 'Employment') return styles.catEmployment;
+  if (category === 'Health') return styles.catHealth;
+  if (category === 'Sports') return styles.catSports;
+  if (category === 'Environment') return styles.catEnvironment;
+  if (category === 'Community / Social') return styles.catCommunity;
+
+  return styles.catOther;
+};
+
+
 
 function SkSuggestions() {
   const { user } = useContext(AuthContext);
-  const [suggestions, setSuggestions] = useState(
-    SUGGESTIONS.map((suggestion) => ({
-      ...suggestion,
-      likesCount: suggestion.likesCount || 0,
-      likedByCurrentOfficial: false,
-    }))
-  );
+  const [suggestions, setSuggestions] = useState([]);
+
+  // Normalize backend or mock data to frontend shape (always camelCase for UI)
+  const normalizeSuggestion = (s) => ({
+    id: s.id,
+    title: s.title,
+    category: s.category,
+    description: s.description,
+    suggestedSolution: s.suggested_solution ?? s.suggestedSolution ?? '',
+    location: s.location,
+    status: s.status,
+    pinned: s.pinned ?? s.is_pinned ?? false,
+    createdAt: s.created_at ?? s.createdAt ?? '',
+    updatedAt: s.updated_at ?? s.updatedAt ?? '',
+    submittedAt: s.submitted_at ?? s.submittedAt ?? '',
+    submittedBy: s.submitted_by ?? s.submittedBy ?? '',
+    likesCount: s.likes_count ?? s.likesCount ?? 0,
+    likedByCurrentOfficial: s.liked_by_current_official ?? s.likedByCurrentOfficial ?? false,
+  });
+
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      try {
+        const res = await apiFetch(`${apiUrl}/api/sk/suggestions`);
+        if (!res.ok) throw new Error('Failed to fetch suggestions');
+        const data = await res.json();
+        setSuggestions(Array.isArray(data) ? data.map(normalizeSuggestion) : []);
+      } catch (err) {
+        toast.error(err.message)
+        setSuggestions([]);
+      }
+    };
+    fetchSuggestions();
+  }, []);
+
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -240,7 +273,7 @@ function SkSuggestions() {
           ))}
         </section>
       ) : (
-        <p>No suggestions found for the selected search and filters.</p>
+        <EmptyState />
       )}
 
       {selectedSuggestion ? (
